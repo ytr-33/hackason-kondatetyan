@@ -7,5 +7,5 @@
 [https://zenn.dev/kazutxt/books/flutter_practice_introduction/viewer/06_chapter1_environment](https://zenn.dev/kazutxt/books/flutter_practice_introduction/viewer/06_chapter1_environment)
 
 1. Gitをインストールする。
-2. FlutterSDKをインストールしてパスを通す。
+2. FlutterSDK(バージョン：3.13.9)をインストールしてパスを通す。
 3. Android Studioをインストール。
