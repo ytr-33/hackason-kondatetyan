@@ -1,0 +1,18 @@
+get:
+  operationId: getIngredientList
+  tags:
+   - ingredients
+  summary: 食材リストを取得
+  description: |- 
+    ★TODO:食材リストをフロント側で持つのか検討する
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../components/dynamoDB/tbl_ingredients.yaml#/Name'
+    default:
+       $ref: '../components/common/response.yaml#/Default'
