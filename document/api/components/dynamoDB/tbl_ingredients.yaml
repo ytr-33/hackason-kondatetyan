@@ -1,0 +1,4 @@
+Name:
+  description: 食材名
+  type: string
+  example: にんじん

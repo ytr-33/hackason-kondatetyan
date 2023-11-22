@@ -1,0 +1,43 @@
+get:
+  operationId: getRecipeList
+  tags:
+   - recipes
+  summary: 料理一覧を取得
+  description: |- 
+    料理一覧を取得
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - name 
+              properties:
+                id:
+                  $ref: '../components/dynamoDB/tbl_recipes.yaml#/Id'
+                name:
+                  $ref: '../components/dynamoDB/tbl_recipes.yaml#/Name'
+                ingredients:
+                  $ref: '../components/dynamoDB/tbl_recipes.yaml#/Ingredients'
+                Procedure:
+                  $ref: '../components/dynamoDB/tbl_recipes.yaml#/Procedure'
+    default:
+       $ref: '../components/common/response.yaml#/Default'
+
+post:
+  operationId: createRecipes
+  tags:
+   - recipes
+  summary: 料理を追加
+  description: |- 
+    料理を追加する
+    ★TODO:詳細は別途検討
+  responses:
+    "201":
+      description: 成功＆返却値なし
+    default:
+       $ref: '../components/common/response.yaml#/Default'

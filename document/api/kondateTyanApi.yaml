@@ -1,0 +1,27 @@
+openapi: 3.0.0
+info:
+  title: レシピ提案API
+  description: レシピを提案するAPPのAPI
+  version: 1.0.0
+  contact: 
+      name: Yutaro
+      url: http://www.example.com/support
+      email: hogehoge@gmail.com
+servers:
+  - url: https://example.com/api/v1
+tags:
+  - name: ingredients
+    description: 食材関係
+  - name: recipes
+    description: レシピ関係
+
+paths:
+  /ingredients:
+    $ref: "./apis/ingredients.yaml"
+  
+  /recipes:
+    $ref: "./apis/recipes.yaml"
+  /recipes/{recipe_id}:
+    $ref: "./apis/recipes/recipe_id.yaml"
+  /recipes/proposal:
+    $ref: "./apis/recipes/proposal.yaml"

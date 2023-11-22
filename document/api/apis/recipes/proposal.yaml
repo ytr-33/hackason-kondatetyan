@@ -1,0 +1,38 @@
+post:
+  operationId: getRecipeProposalList
+  tags:
+   - recipes
+  summary: レシピ提案リストを取得
+  description: |- 
+    入力値から提案されるレシピの詳細リストを返却
+  requestBody:
+    description: 使用する食材リスト
+    required: true
+    content:  
+      application/json:
+        schema:
+          type: array
+          items:
+            $ref: '../../components/dynamoDB/tbl_ingredients.yaml#/Name'
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - name 
+              properties:
+                id:
+                  $ref: '../../components/dynamoDB/tbl_recipes.yaml#/Id'
+                name:
+                  $ref: '../../components/dynamoDB/tbl_recipes.yaml#/Name'
+                ingredients:
+                  $ref: '../../components/dynamoDB/tbl_recipes.yaml#/Ingredients'
+                Procedure:
+                  $ref: '../../components/dynamoDB/tbl_recipes.yaml#/Procedure'
+    default:
+       $ref: '../../components/common/response.yaml#/Default'
