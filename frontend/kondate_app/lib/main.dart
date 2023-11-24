@@ -15,7 +15,12 @@ class KondateApp extends StatelessWidget {
     return MaterialApp(
       home: const MainPage(),
       theme: ThemeData(
-        primarySwatch: Colors.orange,
+        primarySwatch: Colors.green,
+        checkboxTheme: CheckboxThemeData(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(100),
+          ),
+        ),
       ),
     );
   }
