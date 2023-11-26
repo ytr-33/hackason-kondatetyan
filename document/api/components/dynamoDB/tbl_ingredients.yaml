@@ -2,3 +2,8 @@ Name:
   description: 食材名
   type: string
   example: にんじん
+
+Category:
+  description: 食材カテゴリ
+  type: string
+  example: 野菜
