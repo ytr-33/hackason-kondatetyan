@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kondate_app/data/ingredient.dart';
 import 'package:kondate_app/models/ingredient.dart';
+import 'package:kondate_app/configs/constants.dart';
 
 class AddIngredientPage extends StatefulWidget {
   const AddIngredientPage({super.key});
@@ -9,18 +11,13 @@ class AddIngredientPage extends StatefulWidget {
 
 class _AddIngredientPageState extends State<AddIngredientPage> {
   final TextEditingController _nameController = TextEditingController();
-  String _selectedCategory = '肉類'; // 新しく追加した行
-  List<String> categories = ['肉類', '魚介類', '野菜類', 'その他'];
-  List<Ingredient> ingredients = [
-    Ingredient(1, 'テスト', '肉類'),
-    Ingredient(2, 'テスト2', '魚介類'),
-  ];
+  String _selectedCategory = ingredientCategories[0]; // 新しく追加した行
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('材料を追加'),
+        title: const Text('Add Ingredient'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -29,13 +26,13 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
           children: [
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: '材料の名前'),
+              decoration: const InputDecoration(labelText: '材料名'),
             ),
             const SizedBox(height: 16.0),
             // カテゴリーのドロップダウンメニュー
             DropdownButtonFormField<String>(
               value: _selectedCategory,
-              items: categories.map((String category) {
+              items: ingredientCategories.map((String category) {
                 return DropdownMenuItem<String>(
                   value: category,
                   child: Text(category),
@@ -46,7 +43,7 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
                   _selectedCategory = value!;
                 });
               },
-              decoration: InputDecoration(labelText: 'カテゴリ'),
+              decoration: const InputDecoration(labelText: 'カテゴリー'),
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
