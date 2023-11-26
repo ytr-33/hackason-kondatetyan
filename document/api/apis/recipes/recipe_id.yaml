@@ -5,7 +5,6 @@ put:
   summary: 料理を更新
   description: |- 
     料理詳細を更新<br/>
-    ★TODO:詳細は別途検討
   parameters: 
     - name: recipe_id
       in: path 
@@ -13,9 +12,24 @@ put:
       required: true
       schema:
         $ref: '../../components/dynamoDB/tbl_recipes.yaml#/Id'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              $ref: '../../components/dynamoDB/tbl_recipes.yaml#/Name'
+            category:
+              $ref: '../../components/dynamoDB/tbl_recipes.yaml#/Category'
+            ingredients:
+              $ref: '../../components/dynamoDB/tbl_recipes.yaml#/Ingredients'
+            Procedure:
+              $ref: '../../components/dynamoDB/tbl_recipes.yaml#/Procedure'
   responses:
     "201":
-      description: 成功＆返却値なし
+      description: 更新成功
     default:
        $ref: '../../components/common/response.yaml#/Default'
 
@@ -34,7 +48,7 @@ delete:
       schema:
         $ref: '../../components/dynamoDB/tbl_recipes.yaml#/Id'
   responses:
-    "201":
+    "204":
       description: 成功＆返却値なし
     default:
        $ref: '../../components/common/response.yaml#/Default'

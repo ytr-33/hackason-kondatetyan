@@ -21,6 +21,8 @@ get:
                   $ref: '../components/dynamoDB/tbl_recipes.yaml#/Id'
                 name:
                   $ref: '../components/dynamoDB/tbl_recipes.yaml#/Name'
+                category:
+                  $ref: '../components/dynamoDB/tbl_recipes.yaml#/Category'
                 ingredients:
                   $ref: '../components/dynamoDB/tbl_recipes.yaml#/Ingredients'
                 Procedure:
@@ -35,9 +37,24 @@ post:
   summary: 料理を追加
   description: |- 
     料理を追加する
-    ★TODO:詳細は別途検討
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              $ref: '../components/dynamoDB/tbl_recipes.yaml#/Name'
+            category:
+              $ref: '../components/dynamoDB/tbl_recipes.yaml#/Category'
+            ingredients:
+              $ref: '../components/dynamoDB/tbl_recipes.yaml#/Ingredients'
+            Procedure:
+              $ref: '../components/dynamoDB/tbl_recipes.yaml#/Procedure'
   responses:
-    "201":
+    "204":
       description: 成功＆返却値なし
     default:
        $ref: '../components/common/response.yaml#/Default'
