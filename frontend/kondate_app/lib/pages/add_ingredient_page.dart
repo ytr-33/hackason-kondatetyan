@@ -12,6 +12,7 @@ class AddIngredientPage extends StatefulWidget {
 class _AddIngredientPageState extends State<AddIngredientPage> {
   final TextEditingController _nameController = TextEditingController();
   String _selectedCategory = ingredientCategories[0]; // 新しく追加した行
+  final TextEditingController _unitController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +47,11 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
               decoration: const InputDecoration(labelText: 'カテゴリー'),
             ),
             const SizedBox(height: 16.0),
+            TextField(
+              controller: _unitController,
+              decoration: const InputDecoration(labelText: '単位'),
+            ),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
                 // 入力された材料を追加
@@ -54,10 +60,10 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
                 if (name.isNotEmpty && _selectedCategory.isNotEmpty) {
                   // ユーザーが名前とカテゴリを入力した場合のみ追加
                   Ingredient newIngredient = Ingredient(
-                    ingredients.length + 1,
-                    name,
-                    _selectedCategory,
-                  );
+                      id: ingredients.length + 1,
+                      name: name,
+                      category: _selectedCategory,
+                      unit: 'g');
                   ingredients.add(newIngredient);
 
                   // 追加後に入力欄をクリア

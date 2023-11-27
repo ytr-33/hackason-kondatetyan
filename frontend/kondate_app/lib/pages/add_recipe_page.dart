@@ -76,11 +76,11 @@ class _AddRecipePageState extends State<AddRecipePage> {
                   Map<String, dynamic> ingredientsMap =
                       json.decode(ingredients);
                   Recipe newRecipe = Recipe(
-                    1, // ここでIDを適切に設定する必要があります
-                    name,
-                    _selectedCategory,
-                    ingredientsMap,
-                    procedure,
+                    id: 1, // ここでIDを適切に設定する必要があります
+                    name: name,
+                    category: _selectedCategory,
+                    ingredients: ingredientsMap,
+                    procedure: procedure,
                   );
 
                   _nameController.clear();

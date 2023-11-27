@@ -81,7 +81,8 @@ class ChoicePage extends ConsumerWidget {
                                   MaterialPageRoute(
                                     builder: (context) => EditIngredientPage(
                                       ingredientName: ingredient.name,
-                                      initialCategory: ingredient.category,
+                                      ingredientCategory: ingredient.category,
+                                      ingredientUnit: ingredient.unit,
                                     ),
                                   ),
                                 );
