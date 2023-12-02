@@ -5,11 +5,18 @@ class Recipe {
   Map ingredients;
   String procedure;
 
-  Recipe(
-    this.id,
-    this.name,
-    this.category,
-    this.ingredients,
-    this.procedure,
-  );
+  Recipe({
+    required this.id,
+    required this.name,
+    required this.category,
+    required this.ingredients,
+    required this.procedure,
+  });
+
+  Recipe.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        category = json['category'],
+        ingredients = json['ingredients'],
+        procedure = json['procedure'];
 }

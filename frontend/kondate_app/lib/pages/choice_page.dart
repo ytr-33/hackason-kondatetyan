@@ -1,163 +1,200 @@
+/*// choice_page.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kondate_app/dialogs/delete_confirmation_dialog.dart';
 import 'package:kondate_app/models/ingredient.dart';
 import 'package:kondate_app/pages/add_ingredient_page.dart';
+import 'package:kondate_app/pages/edit_ingredient_page.dart';
+import 'package:kondate_app/pages/result_page.dart';
+import 'package:kondate_app/providers/ingredient_provider.dart';
+import 'package:kondate_app/providers/selected_ingredients_provider.dart';
+import 'package:kondate_app/widgets/custom_speed_dial.dart'; // カスタムウィジェットをインポート
+import 'package:kondate_app/configs/constants.dart';
+import 'package:kondate_app/widgets/ingredient_list_tile.dart';
 
-class ChoicePage extends StatefulWidget {
+// RiverpodのProvider
+final selectedIngredientsProvider = StateProvider<List<String>>((ref) => []);
+
+final container = ProviderContainer();
+
+// 状態に応じた処理
+
+class ChoicePage extends ConsumerWidget {
   const ChoicePage({Key? key}) : super(key: key);
 
   @override
-  State<ChoicePage> createState() => _ChoicePageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ingredients = ref.watch(ingredientNotifierProvider);
+    final List<int> selectedIngredients =
+        ref.watch(selectedIngredientsNotifierProvider);
 
-class _ChoicePageState extends State<ChoicePage> {
-  List<String> checkedValues = [];
+    void showDeleteConfirmationDialog(String ingredientName) {
+      // ダイアログを表示し、削除が確定されたら非同期で削除
+      DeleteConfirmationDialog.show(context, ingredientName, () async {
+        await Future.delayed(const Duration(seconds: 3)); // 仮の非同期処理の例
+        // 削除確認ダイアログで"削除"が選択されたときの処理
+        ref.read(selectedIngredientsProvider.notifier).state =
+            List.from(selectedIngredients)..remove(ingredientName);
+      });
+    }
 
-  List<String> categories = ['肉類', '魚介類', '野菜類', 'その他'];
-
-  List<Ingredient> ingredients = [
-    Ingredient(1, 'ベーコン', '肉類'),
-    Ingredient(2, '豚ひき肉', '肉類'),
-    Ingredient(3, '牛豚ミンチ', '肉類'),
-    Ingredient(4, '鳥もも肉', '肉類'),
-    Ingredient(5, '鳥むね肉', '肉類'),
-    Ingredient(6, 'えび', '魚介類'),
-    Ingredient(7, 'ホタテ', '魚介類'),
-    Ingredient(8, 'サーモン', '魚介類'),
-    Ingredient(9, 'カツオ', '魚介類'),
-    Ingredient(10, 'うなぎ', '魚介類'),
-    Ingredient(11, 'キャベツ', '野菜類'),
-    Ingredient(12, 'じゃがいも', '野菜類'),
-    Ingredient(13, 'ほうれん草', '野菜類'),
-    Ingredient(14, 'バジル', '野菜類'),
-    Ingredient(15, '人参', '野菜類'),
-    Ingredient(16, '玉ねぎ', '野菜類'),
-    Ingredient(17, '米', 'その他'),
-    Ingredient(18, 'パスタ', 'その他'),
-  ];
-
-  void clearSelection() {
-    setState(() {
-      checkedValues.clear();
-    });
-  }
-
-  void showSelectedIngredients() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Selected Ingredients'),
-          content: Column(
-            children: checkedValues.map((ingredient) => Text(ingredient)).toList(),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Close'),
-            ),
+    Widget ingredientsColumn = ingredients.when(
+      data: (ingredients) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // カテゴリごとに展開可能なリストを表示
+            for (String category in ingredientCategories)
+              ExpansionTile(
+                title: Text(category),
+                children: [
+                  // カテゴリに属する材料ごとにリストタイルを表示
+                  for (Ingredient ingredient in ingredients.values)
+                    if (ingredient.category == category)
+                      // カスタムウィジェットを利用して材料のリストタイルを表示
+                      IngredientListTile(
+                        ingredient: ingredient,
+                        isSelected: selectedIngredients.contains(ingredient.id),
+                        onCheckboxChanged: (value) {
+                          if (value == true) {
+                            // チェックが入ったときの処理
+                            final notifier = ref.read(
+                                selectedIngredientsNotifierProvider.notifier);
+                            notifier.addState(ingredient.id);
+                          } else {
+                            // チェックが外れたときの処理
+                            final notifier = ref.read(
+                                selectedIngredientsNotifierProvider.notifier);
+                            notifier.removeState(ingredient.id);
+                          }
+                        },
+                        onEditPressed: () {
+                          // 編集画面に遷移
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => EditIngredientPage(
+                                ingredientName: ingredient.name,
+                                ingredientCategory: ingredient.category,
+                                ingredientUnit: ingredient.unit,
+                              ),
+                            ),
+                          );
+                        },
+                        onDeletePressed: () {
+                          // 削除確認ダイアログを表示
+                          showDeleteConfirmationDialog(ingredient.name);
+                        },
+                      ),
+                ],
+              ),
           ],
         );
+        // 成功時の処理
+      },
+      loading: () {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+        // ロード中の処理
+      },
+      error: (e, s) {
+        return Center(
+          child: Text(e.toString()),
+        );
+        // エラー時の処理
       },
     );
-  }
 
-  @override
-  Widget build(BuildContext context) {
+    // RiverpodのProviderから選択された材料のリストを取得
+
+    // 材料の選択をクリアする関数
+    void clearSelection() {
+      final notifier = ref.read(selectedIngredientsNotifierProvider.notifier);
+      notifier.clearState();
+    }
+
+    void removeSelection(int id) {
+      final notifier = ref.read(selectedIngredientsNotifierProvider.notifier);
+      notifier.removeState(id);
+    }
+
+    // 選択された材料を表示する関数
+    void showSelectedIngredients() {
+      // 選択された材料のリストを取得
+      final selectedIngredients =
+          ref.watch(selectedIngredientsNotifierProvider);
+      // 選択された材料のリストを表示
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('選択された材料'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (int id in selectedIngredients)
+                  Text(
+                    ingredients
+                        .when(
+                          data: (ingredients) {
+                            return ingredients[id]!.name;
+                          },
+                          loading: () => 'ロード中',
+                          error: (e, s) => 'エラー',
+                        )
+                        .toString(),
+                  ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('閉じる'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    // 削除確認ダイアログを表示する関数
+
+    // カスタムウィジェットとしてSpeedDialを利用
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  for (String category in categories)
-                    ExpansionTile(
-                      title: Text(category),
-                      children: [
-                        for (Ingredient ingredient in ingredients)
-                          if (ingredient.category == category)
-                            ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Checkbox(
-                                        value: checkedValues.contains(ingredient.name),
-                                        onChanged: (bool? value) {
-                                          setState(() {
-                                            if (value != null && value) {
-                                              checkedValues.add(ingredient.name);
-                                            } else {
-                                              checkedValues.remove(ingredient.name);
-                                            }
-                                          });
-                                        },
-                                      ),
-                                      Text(ingredient.name),
-                                    ],
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete),
-                                    onPressed: () {
-                                      // 削除ボタンが押されたときの処理
-                                      setState(() {
-                                        checkedValues.remove(ingredient.name);
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                      ],
-                    ),
-                ],
-              ),
+              child: ingredientsColumn,
             ),
           ),
         ],
       ),
-      floatingActionButton: SpeedDial(
-        animatedIcon: AnimatedIcons.menu_close,
-        children: [
-          SpeedDialChild(
-            child: const Icon(Icons.check),
-            label: 'Get Menu',
-            onTap: () {
-              // Get Menu ボタンが押されたときの処理
-            },
-          ),
-          SpeedDialChild(
-            child: const Icon(Icons.list),
-            label: 'Selected',
-            onTap: () {
-              showSelectedIngredients();
-            },
-          ),
-          SpeedDialChild(
-            child: const Icon(Icons.add),
-            label: 'Add Ingredient',
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return const AddIngredientPage();
-              },));
-            },
-          ),
-          SpeedDialChild(
-            child: const Icon(Icons.clear),
-            label: 'Clear Check',
-            onTap: () {
-              clearSelection();
-            },
-          ),
-        ],
+      // カスタムウィジェットとして作成したSpeedDialを利用
+      floatingActionButton: CustomSpeedDial(
+        // メニュー取得ボタン
+        onGetMenuTap: () {
+          // メニュー画面に遷移
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return ResultPage(selectedIngredients: selectedIngredients);
+          }));
+        },
+        // 選択された材料を表示するボタン
+        onSelectedTap: showSelectedIngredients,
+        // 材料を追加するボタン
+        onAddTap: () {
+          // 材料追加画面に遷移
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return const AddIngredientPage();
+          }));
+        },
+        // チェックをクリアするボタン
+        onClearCheckTap: clearSelection,
       ),
     );
   }
 }
+*/
