@@ -2,14 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kondate_app/configs/constants.dart';
-import 'package:kondate_app/pages/choice_page.dart';
+//import 'package:kondate_app/pages/choice_page.dart';
 import 'package:kondate_app/pages/menu_page.dart';
-
-// 現在のページのインデックスを管理するProvider
-final currentPageIndexProvider = StateProvider<int>((ref) => 0);
-
-// 編集モードの状態を管理するProvider
-final editModeProvider = StateProvider<bool>((ref) => false);
+import 'package:kondate_app/pages/test.dart';
+import 'package:kondate_app/providers/current_page_provider.dart';
+import 'package:kondate_app/providers/edit_mode_provider.dart';
 
 // メインのページ
 class MainPage extends ConsumerWidget {
@@ -18,8 +15,8 @@ class MainPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // 現在のページのインデックスと編集モードの状態を取得
-    final int currentPageIndex = ref.watch(currentPageIndexProvider);
-    final bool editMode = ref.watch(editModeProvider);
+    final int currentPageIndex = ref.watch(currentPageNotifierProvider);
+    final bool editMode = ref.watch(editModeNotifierProvider);
 
     // ページのナビゲーションアイテム
     final List<PageNavigationDestination> destinations = [
@@ -50,14 +47,16 @@ class MainPage extends ConsumerWidget {
             value: editMode,
             activeColor: Colors.orange,
             onChanged: (value) {
-              ref.read(editModeProvider.notifier).state = value;
+              final notifier = ref.read(editModeNotifierProvider.notifier);
+              notifier.updateState(value);
+              debugPrint('editMode: $value');
             },
           ),
         ],
       ),
       body: <Widget>[
         // 各ページのコンテナを表示
-        const PageContainer(page: ChoicePage()),
+        const PageContainer(page: Test()),
         const PageContainer(page: MenuPage()),
         const PageContainer(page: Text('setting')),
       ][currentPageIndex],
@@ -65,7 +64,9 @@ class MainPage extends ConsumerWidget {
         // ナビゲーションアイテムの一覧
         selectedIndex: currentPageIndex,
         onDestinationSelected: (index) {
-          ref.read(currentPageIndexProvider.notifier).state = index;
+          final notifier = ref.read(currentPageNotifierProvider.notifier);
+          notifier.updateState(index);
+          debugPrint('currentPageIndex: $index');
         },
         destinations: destinations.map((destination) {
           return NavigationDestination(

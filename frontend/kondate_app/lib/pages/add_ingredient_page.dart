@@ -11,7 +11,7 @@ class AddIngredientPage extends StatefulWidget {
 
 class _AddIngredientPageState extends State<AddIngredientPage> {
   final TextEditingController _nameController = TextEditingController();
-  String _selectedCategory = ingredientCategories[0]; // 新しく追加した行
+  String _selectedCategory = ingredientCategories.first; // 新しく追加した行
   final TextEditingController _unitController = TextEditingController();
 
   @override

@@ -1,14 +1,27 @@
 //定数を定義するファイル
 
-const List<String> pageTitles = ['Choice', 'Menu', 'Setting'];
-const List<String> menuCategories = ['和食', '洋食', '中華', 'その他'];
+String apiRoute = 'https://pokeapi.co/api/v2';
 
-const List<String> ingredientCategories = [
+List<String> pageTitles = [
+  //英語
+  'Choice',
+  'Menu',
+  'Setting',
+];
+
+List<String> menuCategories = [
+  '和食',
+  '洋食',
+  '中華',
+  'その他',
+];
+
+List<String> ingredientCategories = [
   'grass',
   'fire',
   'water',
   'bug',
-  'normal'
+  'normal',
 ];
 
 //const List<String> ingredientCategories = ['肉類', '魚介類', '野菜類', 'その他'];
