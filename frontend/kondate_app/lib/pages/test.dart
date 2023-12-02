@@ -8,6 +8,6 @@ class Test extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ingredients = ref.read(ingredientNotifierProvider.notifier);
-    return const Text('test');
+    return Text('data');
   }
 }

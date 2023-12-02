@@ -24,10 +24,10 @@ class IngredientNotifier extends _$IngredientNotifier {
   }
 
   // 材料をIDで取得
-  Future<Ingredient?> byID(int id) async{
+  Ingredient? byID(int id){
     if (ingredientMap.containsKey(id) == false) {
       fetchIngredient(id);
     }
-    return await ingredientMap[id];
+    return ingredientMap[id];
   }
 }
