@@ -1,6 +1,7 @@
 //定数を定義するファイル
 
-String apiRoute = 'https://pokeapi.co/api/v2';
+String apiRoute = 'https://pokeapi.co/api/v2'; //PokeAPI
+//String apiRoute = 'http://127.0.0.1:4010'; //モックサーバー
 
 List<String> pageTitles = [
   //英語

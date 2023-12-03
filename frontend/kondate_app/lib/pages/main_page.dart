@@ -2,9 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kondate_app/configs/constants.dart';
-//import 'package:kondate_app/pages/choice_page.dart';
+import 'package:kondate_app/pages/choice_page.dart';
 import 'package:kondate_app/pages/menu_page.dart';
-import 'package:kondate_app/pages/test.dart';
 import 'package:kondate_app/providers/current_page_provider.dart';
 import 'package:kondate_app/providers/edit_mode_provider.dart';
 
@@ -56,7 +55,7 @@ class MainPage extends ConsumerWidget {
       ),
       body: <Widget>[
         // 各ページのコンテナを表示
-        const PageContainer(page: Test()),
+        const PageContainer(page: ChoicePage()),
         const PageContainer(page: MenuPage()),
         const PageContainer(page: Text('setting')),
       ][currentPageIndex],

@@ -7,7 +7,14 @@ class Test extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ingredients = ref.read(ingredientNotifierProvider.notifier);
-    return Text('data');
+    final ingredients = ref.watch(ingredientNotifierProvider);
+    return ListView.builder(
+      itemCount: ingredients.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(ingredients[index+1]?.name ?? 'null'),
+        );
+      },
+    );
   }
 }
