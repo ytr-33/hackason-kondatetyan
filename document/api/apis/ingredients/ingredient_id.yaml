@@ -1,0 +1,53 @@
+put:
+  operationId: updateIngredient
+  tags:
+    - ingredients
+  summary: 食材を更新
+  description: |-
+    料理詳細を更新
+  parameters:
+    - name: ingredient_id
+      in: path
+      description: 食材ID
+      required: true
+      schema: 
+        $ref: '../../components/dynamoDB/tbl_ingredients.yaml#/Id'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              $ref: '../../components/dynamoDB/tbl_ingredients.yaml#/Name'
+            category:
+              $ref: '../../components/dynamoDB/tbl_ingredients.yaml#/Category'
+            unit:
+              $ref: '../../components/dynamoDB/tbl_ingredients.yaml#/Unit'
+  responses:
+    "201":
+      description: 更新成功
+    default:
+       $ref: '../../components/common/response.yaml#/Default'
+
+
+delete:
+  operationId: deleteIngredient
+  tags:
+   - ingredients
+  summary: 食材を削除
+  description: |- 
+    指定した食材IDの料理を削除
+  parameters: 
+    - name: ingredient_id
+      in: path 
+      description: 食材ID
+      required: true
+      schema:
+        $ref: '../../components/dynamoDB/tbl_ingredients.yaml#/Id'
+  responses:
+    "204":
+      description: 成功＆返却値なし
+    default:
+       $ref: '../../components/common/response.yaml#/Default'

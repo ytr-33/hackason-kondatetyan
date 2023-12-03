@@ -3,7 +3,6 @@ Id:
   type: integer
   example: 1
 
-
 Name:
   description: 料理名
   type: string
