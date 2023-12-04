@@ -1,0 +1,1 @@
+export {ApiGatewayEventPaser} from "./apiGatewayEventParser"
