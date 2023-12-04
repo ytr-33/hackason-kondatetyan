@@ -92,9 +92,8 @@ class ChoicePage extends ConsumerWidget {
             title: Text(category),
             children: [
               // カテゴリに属する材料ごとにリストタイルを表示
-
               for (Ingredient? ingredient in ingredients.values)
-                if (ingredient!.category == category)
+                if (ingredient!.category == category )
                   // カスタムウィジェットを利用して材料のリストタイルを表示
                   IngredientListTile(
                     ingredient: ingredient,
@@ -128,7 +127,9 @@ class ChoicePage extends ConsumerWidget {
                       // 削除確認ダイアログを表示
                       showDeleteConfirmationDialog(ingredient.name);
                     },
-                  ),
+                  )
+                else if (ingredient.category != category)
+                  Container(),
             ],
           ),
       ],

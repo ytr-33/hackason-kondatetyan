@@ -1,21 +1,19 @@
 // main_page.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kondate_app/configs/constants.dart';
 import 'package:kondate_app/pages/choice_page.dart';
 import 'package:kondate_app/pages/menu_page.dart';
-import 'package:kondate_app/providers/current_page_provider.dart';
-import 'package:kondate_app/providers/edit_mode_provider.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 // メインのページ
-class MainPage extends ConsumerWidget {
+class MainPage extends HookWidget {
   const MainPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     // 現在のページのインデックスと編集モードの状態を取得
-    final int currentPageIndex = ref.watch(currentPageNotifierProvider);
-    final bool editMode = ref.watch(editModeNotifierProvider);
+    final currentPageIndex = useState(0);
+    final editMode = useState(false);
 
     // ページのナビゲーションアイテム
     final List<PageNavigationDestination> destinations = [
@@ -38,17 +36,21 @@ class MainPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         centerTitle: true,
-        title: Text(pageTitles[currentPageIndex]),
+        title: Text(pageTitles[currentPageIndex.value]),
         actions: [
           // 編集モードのスイッチ
           Switch(
-            value: editMode,
+            value: editMode.value,
             activeColor: Colors.orange,
             onChanged: (value) {
-              final notifier = ref.read(editModeNotifierProvider.notifier);
-              notifier.updateState(value);
-              debugPrint('editMode: $value');
+              if (value) {
+                editMode.value = true;
+              } else {
+                editMode.value = false;
+              }
+              debugPrint('editMode: $value ${editMode.value}');
             },
           ),
         ],
@@ -58,14 +60,12 @@ class MainPage extends ConsumerWidget {
         const PageContainer(page: ChoicePage()),
         const PageContainer(page: MenuPage()),
         const PageContainer(page: Text('setting')),
-      ][currentPageIndex],
+      ][currentPageIndex.value],
       bottomNavigationBar: NavigationBar(
         // ナビゲーションアイテムの一覧
-        selectedIndex: currentPageIndex,
+        selectedIndex: currentPageIndex.value,
         onDestinationSelected: (index) {
-          final notifier = ref.read(currentPageNotifierProvider.notifier);
-          notifier.updateState(index);
-          debugPrint('currentPageIndex: $index');
+          currentPageIndex.value = index;
         },
         destinations: destinations.map((destination) {
           return NavigationDestination(
