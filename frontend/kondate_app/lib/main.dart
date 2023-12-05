@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kondate_app/pages/main_page.dart';
+import 'package:kondate_app/pages/splash.dart';
 
 void main() {
   runApp(
@@ -16,7 +16,7 @@ class KondateApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: const MainPage(),
+      home: const SplashPage(),
       theme: ThemeData(
         primarySwatch: Colors.green,
         checkboxTheme: CheckboxThemeData(
