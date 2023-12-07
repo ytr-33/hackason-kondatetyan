@@ -17,7 +17,8 @@ Ingredients:
   description: |-
     必要食材<br/>
     必要食材と個数のjsonデータ
-  type: string
+  type: object
+  additionalProperties:
   example: |-
     { 牛肉 : 1 , にんじん: 2, ジャガイモ :2 }
 

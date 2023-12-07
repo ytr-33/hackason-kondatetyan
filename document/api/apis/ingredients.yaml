@@ -14,6 +14,28 @@ get:
             type: array
             items:
               $ref: '../components/dynamoDB/tbl_ingredients.yaml#/Name'
+          example: 
+            - id: 1
+              name: "豚肉"
+              category: "肉"
+              unit: "g"
+            - id: 2
+              name: "牛肉"
+              category: "肉"
+              unit: "g"
+            - id: 3
+              name: "ジャガイモ"
+              category: "野菜"
+              unit: "個"
+            - id: 4
+              name: "にんじん"
+              category: "野菜"
+              unit: "本"
+            - id: 5
+              name: "牛乳"
+              category: "乳製品"
+              unit: "ml"
+                
     default:
        $ref: '../components/common/response.yaml#/Default'
 
