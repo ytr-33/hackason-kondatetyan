@@ -1,15 +1,16 @@
 // lib/dialogs/delete_confirmation_dialog.dart
 import 'package:flutter/material.dart';
+import 'package:kondate_app/models/ingredient.dart';
 
 class DeleteConfirmationDialog {
-  static void show(BuildContext context, String ingredientName,
+  static void show(BuildContext context, Ingredient ingredient,
       Future<void> Function() onConfirm) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('確認'),
-          content: Text('$ingredientName を削除しますか？'),
+          content: Text('${ingredient.name} を削除しますか？'),
           actions: [
             TextButton(
               onPressed: () {
@@ -18,9 +19,9 @@ class DeleteConfirmationDialog {
               child: const Text('キャンセル'),
             ),
             TextButton(
-              onPressed: () async {
-                await onConfirm(); // 非同期処理を待つ
-                Navigator.of(context).pop(); // ダイアログを閉じる
+              onPressed: () {
+                onConfirm();
+                Navigator.of(context).pop();
               },
               child: const Text('削除'),
             ),

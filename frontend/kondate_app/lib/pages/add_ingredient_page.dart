@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:kondate_app/data/ingredient.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kondate_app/models/ingredient.dart';
 import 'package:kondate_app/configs/constants.dart';
+import 'package:kondate_app/pages/choice_page.dart';
+import 'package:kondate_app/providers/ingredient_provider.dart';
+import 'package:kondate_app/services/api_service.dart';
 
-class AddIngredientPage extends StatefulWidget {
+class AddIngredientPage extends HookWidget {
   const AddIngredientPage({super.key});
-  @override
-  State<AddIngredientPage> createState() => _AddIngredientPageState();
-}
-
-class _AddIngredientPageState extends State<AddIngredientPage> {
-  final TextEditingController _nameController = TextEditingController();
-  String _selectedCategory = ingredientCategories.first; // 新しく追加した行
-  final TextEditingController _unitController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final nameController = useTextEditingController();
+    final selectedCategory = useState(ingredientCategories[0]);
+    final unitController = useTextEditingController();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Ingredient'),
+
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -26,13 +27,13 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             TextField(
-              controller: _nameController,
+              controller: nameController,
               decoration: const InputDecoration(labelText: '材料名'),
             ),
             const SizedBox(height: 16.0),
             // カテゴリーのドロップダウンメニュー
             DropdownButtonFormField<String>(
-              value: _selectedCategory,
+              value: selectedCategory.value,
               items: ingredientCategories.map((String category) {
                 return DropdownMenuItem<String>(
                   value: category,
@@ -40,52 +41,65 @@ class _AddIngredientPageState extends State<AddIngredientPage> {
                 );
               }).toList(),
               onChanged: (String? value) {
-                setState(() {
-                  _selectedCategory = value!;
-                });
+                // ドロップダウンメニューで選択されたカテゴリーを更新
+                if (value != null) {
+                  selectedCategory.value = value;
+                }
               },
               decoration: const InputDecoration(labelText: 'カテゴリー'),
             ),
             const SizedBox(height: 16.0),
             TextField(
-              controller: _unitController,
+              controller: unitController,
               decoration: const InputDecoration(labelText: '単位'),
             ),
             const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                // 入力された材料を追加
-                String name = _nameController.text;
+            Consumer(
+              builder: (context, ref, _) {
+                return ElevatedButton(
+                  child: const Text('追加'),
+                  onPressed: () async {
+                    // ユーザーが名前とカテゴリを入力した場合のみ追加
+                    final currentContext = context;
 
-                if (name.isNotEmpty && _selectedCategory.isNotEmpty) {
-                  // ユーザーが名前とカテゴリを入力した場合のみ追加
-                  Ingredient newIngredient = Ingredient(
-                      id: ingredients.length + 1,
-                      name: name,
-                      category: _selectedCategory,
-                      unit: 'g');
-                  ingredients.add(newIngredient);
+                    IngredientExceptId newIngredient = IngredientExceptId(
+                      name: nameController.value.text,
+                      category: selectedCategory.value,
+                      unit: unitController.value.text,
+                    );
 
-                  // 追加後に入力欄をクリア
-                  _nameController.clear();
+                    final response = await postIngredientToApi(newIngredient);
 
-                  // ユーザーに成功メッセージを表示
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('$name が $_selectedCategory に追加されました'),
-                    ),
-                  );
-                } else {
-                  // エラーメッセージを表示
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('名前とカテゴリを入力してください'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
+                    Ingredient ingredient = Ingredient(
+                      id: response,
+                      name: newIngredient.name,
+                      category: newIngredient.category,
+                      unit: newIngredient.unit,
+                    );
+
+                    // 材料を追加
+                    final notifier =
+                        ref.read(ingredientNotifierProvider.notifier);
+                    notifier.addIngredient(ingredient);
+
+                    // 追加後に入力欄をクリア
+                    nameController.clear();
+                    unitController.clear();
+
+                    ScaffoldMessenger.of(currentContext).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            '${newIngredient.name} が ${newIngredient.category} に追加されました'),
+                      ),
+                    );
+                    Navigator.of(currentContext).push(
+                      MaterialPageRoute(
+                        builder: (context) => ChoicePage(),
+                      ),
+                    );
+                  },
+                );
               },
-              child: const Text('追加'),
             ),
           ],
         ),

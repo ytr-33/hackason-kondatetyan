@@ -4,11 +4,11 @@ part 'selected_ingredients_provider.g.dart';
 @riverpod
 class SelectedIngredientsNotifier extends _$SelectedIngredientsNotifier {
   @override
-  List<int> build() {
+  List<num> build() {
     return [];
   }
 
-  void addState(int id) {
+  void addState(num id) {
     state = [...state, id];
   }
 
@@ -16,7 +16,7 @@ class SelectedIngredientsNotifier extends _$SelectedIngredientsNotifier {
     state = [];
   }
 
-  void removeState(int id) {
+  void removeState(num id) {
     state = [...state]..remove(id);
   }
 }

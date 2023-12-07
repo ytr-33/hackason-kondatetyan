@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ResultPage extends StatelessWidget {
-  final List<int> selectedIngredients;
+  final List<num> selectedIngredients;
 
   const ResultPage({Key? key, required this.selectedIngredients})
       : super(key: key);

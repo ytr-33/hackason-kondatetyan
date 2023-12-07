@@ -8,33 +8,27 @@ import 'package:kondate_app/pages/edit_ingredient_page.dart';
 import 'package:kondate_app/pages/result_page.dart';
 import 'package:kondate_app/providers/ingredient_provider.dart';
 import 'package:kondate_app/providers/selected_ingredients_provider.dart';
+import 'package:kondate_app/services/api_service.dart';
 import 'package:kondate_app/widgets/custom_speed_dial.dart'; // カスタムウィジェットをインポート
 import 'package:kondate_app/configs/constants.dart';
 import 'package:kondate_app/widgets/ingredient_list_tile.dart';
 
-// RiverpodのProvider
-final selectedIngredientsProvider = StateProvider<List<String>>((ref) => []);
-
-final container = ProviderContainer();
-
 // 状態に応じた処理
-
 class ChoicePage extends ConsumerWidget {
   const ChoicePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ingredients = ref.watch(ingredientNotifierProvider);
-    final List<int> selectedIngredients =
-        ref.watch(selectedIngredientsNotifierProvider);
+    final selectedIngredients = ref.watch(selectedIngredientsNotifierProvider);
 
-    void showDeleteConfirmationDialog(String ingredientName) {
+    void showDeleteConfirmationDialog(Ingredient ingredient) {
       // ダイアログを表示し、削除が確定されたら非同期で削除
-      DeleteConfirmationDialog.show(context, ingredientName, () async {
-        await Future.delayed(const Duration(seconds: 3)); // 仮の非同期処理の例
-        // 削除確認ダイアログで"削除"が選択されたときの処理
-        ref.read(selectedIngredientsProvider.notifier).state =
-            List.from(selectedIngredients)..remove(ingredientName);
+      DeleteConfirmationDialog.show(context, ingredient, () async {
+        // APIから材料を削除
+        await deleteIngredientToApi(ingredient.id);
+        final notifier = ref.read(ingredientNotifierProvider.notifier);
+        notifier.removeIngredient(ingredient.id);
       });
     }
 
@@ -46,7 +40,8 @@ class ChoicePage extends ConsumerWidget {
       notifier.clearState();
     }
 
-    void removeSelection(int id) {
+    void removeSelection(num id) {
+      deleteIngredientToApi(id);
       final notifier = ref.read(selectedIngredientsNotifierProvider.notifier);
       notifier.removeState(id);
     }
@@ -65,7 +60,7 @@ class ChoicePage extends ConsumerWidget {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                for (int id in selectedIngredients)
+                for (num id in selectedIngredients)
                   Text(
                     ingredients[id]?.name ?? '',
                   ),
@@ -93,7 +88,7 @@ class ChoicePage extends ConsumerWidget {
             children: [
               // カテゴリに属する材料ごとにリストタイルを表示
               for (Ingredient? ingredient in ingredients.values)
-                if (ingredient!.category == category )
+                if (ingredient!.category == category)
                   // カスタムウィジェットを利用して材料のリストタイルを表示
                   IngredientListTile(
                     ingredient: ingredient,
@@ -116,16 +111,13 @@ class ChoicePage extends ConsumerWidget {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => EditIngredientPage(
-                            ingredientName: ingredient.name,
-                            ingredientCategory: ingredient.category,
-                            ingredientUnit: ingredient.unit,
-                          ),
+                            ingredient: ingredient,),
                         ),
                       );
                     },
                     onDeletePressed: () {
                       // 削除確認ダイアログを表示
-                      showDeleteConfirmationDialog(ingredient.name);
+                      showDeleteConfirmationDialog(ingredient);
                     },
                   )
                 else if (ingredient.category != category)
@@ -162,7 +154,7 @@ class ChoicePage extends ConsumerWidget {
         onAddTap: () {
           // 材料追加画面に遷移
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            return const AddIngredientPage();
+            return AddIngredientPage();
           }));
         },
         // チェックをクリアするボタン

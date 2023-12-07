@@ -2,7 +2,7 @@
 
 //String apiRoute = 'https://pokeapi.co/api/v2'; //PokeAPI
 //String apiRoute = 'http://127.0.0.1:4010'; //モックサーバー
-String apiRoute ='https://x3mh57lyz4.execute-api.ap-northeast-1.amazonaws.com/prod/apis/ingredients'; //ApiGateway
+String apiRoute ='https://x3mh57lyz4.execute-api.ap-northeast-1.amazonaws.com/prod/apis'; //ApiGateway
 
 List<String> pageTitles = ['Choice', 'Menu', 'Setting'];
 
