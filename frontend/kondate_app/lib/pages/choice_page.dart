@@ -1,7 +1,7 @@
 // choice_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kondate_app/dialogs/delete_confirmation_dialog.dart';
+import 'package:kondate_app/dialogs/delete_ingredient_confirmation_dialog.dart';
 import 'package:kondate_app/models/ingredient.dart';
 import 'package:kondate_app/pages/add_ingredient_page.dart';
 import 'package:kondate_app/pages/edit_ingredient_page.dart';
@@ -24,7 +24,7 @@ class ChoicePage extends ConsumerWidget {
 
     void showDeleteConfirmationDialog(Ingredient ingredient) {
       // ダイアログを表示し、削除が確定されたら非同期で削除
-      DeleteConfirmationDialog.show(context, ingredient, () async {
+      DeleteIngredientConfirmationDialog.show(context, ingredient, () async {
         // APIから材料を削除
         await deleteIngredientToApi(ingredient.id);
         final notifier = ref.read(ingredientNotifierProvider.notifier);
@@ -111,7 +111,8 @@ class ChoicePage extends ConsumerWidget {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => EditIngredientPage(
-                            ingredient: ingredient,),
+                            ingredient: ingredient,
+                          ),
                         ),
                       );
                     },
@@ -154,7 +155,7 @@ class ChoicePage extends ConsumerWidget {
         onAddTap: () {
           // 材料追加画面に遷移
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            return AddIngredientPage();
+            return const AddIngredientPage();
           }));
         },
         // チェックをクリアするボタン

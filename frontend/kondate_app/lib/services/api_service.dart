@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kondate_app/configs/constants.dart';
 import 'package:kondate_app/models/ingredient.dart';
+import 'package:kondate_app/models/recipe.dart';
 
 // ApiGatewayから材料を取得
 Future<Map<num, Ingredient>> getIngredientFromApi() async {
@@ -46,7 +47,6 @@ Future<void> putIngredientToApi(Ingredient ingredient) async {
     unit: ingredient.unit,
   );
 
-  debugPrint(ingredientExceptId.name);
   final request = json.encode(ingredientExceptId);
   final requestUtf = utf8.encode(request);
 
@@ -70,6 +70,105 @@ Future<void> deleteIngredientToApi(num id) async {
     throw Exception('Failed to delete ingredient');
   }
 }
+
+// ApiGatewayからレシピを取得
+Future<Map<num, Recipe>> getRecipeFromApi() async {
+  final response = await http.get(Uri.parse('$apiRoute/recipes'));
+  Map<num, Recipe> recipeMap = {};
+
+  if (response.statusCode == 200) {
+    // jsonデータをパース
+    final List jsonData = json.decode(utf8.decode(response.bodyBytes));
+
+    debugPrint('??????$jsonData');
+
+    for (final item in jsonData) {
+      debugPrint('item:${item['ingredients'].runtimeType}');
+      recipeMap[item['id']] = Recipe.fromJson(item);
+      debugPrint('通過おめでとう');
+    }
+
+    return recipeMap;
+  } else {
+    throw Exception('Failed to load ingredient');
+  }
+}
+
+/*
+Future<Map<num, Recipe>> getRecipeFromApi() async {
+  final response = await http.get(Uri.parse('$apiRoute/recipes'));
+  Map<num, Recipe> recipeMap = {};
+
+  if (response.statusCode == 200) {
+    // jsonデータをパース
+    final List jsonData =
+        json.decode(utf8.decode(response.bodyBytes)) as List<Map<String, dynamic>>;
+    debugPrint('?///////????jsonData?????:${jsonData.toString()}');
+
+    try {
+      for (final item in jsonData) {
+        recipeMap[item['id']] = Recipe.fromJson(item);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+
+    debugPrint('!!!!recipeMap!!!!!:${recipeMap.toString()}');
+
+    return recipeMap;
+  } else {
+    throw Exception('Failed to load recipe');
+  }
+}
+*/
+Future<num> postRecipeToApi(RecipeExceptId recipeExceptId) async {
+  var request = json.encode(recipeExceptId);
+  final requestUtf = utf8.encode(request);
+
+  final response =
+      await http.post(Uri.parse('$apiRoute/recipes'), body: requestUtf);
+  final responseUtf = json.decode(utf8.decode(response.bodyBytes));
+
+  if (response.statusCode == 200) {
+    return responseUtf as num;
+  } else {
+    throw Exception('Failed to post recipe');
+  }
+}
+
+/*
+Future<void> putRecipeToApi(Recipe recipe) async {
+  RecipeExceptId recipeExceptId = RecipeExceptId(
+    name: recipe.name,
+    category: recipe.category,
+    ingredients: recipe.ingredients,
+    procedure: recipe.procedure,
+  );
+
+  final request = json.encode(recipeExceptId);
+  final requestUtf = utf8.encode(request);
+
+  final response = await http
+      .put(Uri.parse('$apiRoute/ingredients/${recipe.id}'), body: requestUtf);
+  if (response.statusCode == 200 ||
+      response.statusCode == 201 ||
+      response.statusCode == 204) {
+    debugPrint('更新成功');
+  } else {
+    throw Exception('Failed to put ingredient');
+  }
+}
+*/
+Future<void> deleteRecipeToApi(num id) async {
+  final response = await http.delete(Uri.parse('$apiRoute/recipes/$id'));
+  if (response.statusCode == 204) {
+    debugPrint(response.body);
+  } else {
+    throw Exception('Failed to delete recipe');
+  }
+}
+
+
 
 // PokeAPIから材料を取得
 /*

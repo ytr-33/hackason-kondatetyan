@@ -68,18 +68,18 @@ class _AddRecipePageState extends State<AddRecipePage> {
                 String name = _nameController.text;
                 String ingredients = _ingredientsController.text;
                 String procedure = _procedureController.text;
-
+/*
                 if (name.isNotEmpty &&
                     _selectedCategory.isNotEmpty &&
                     ingredients.isNotEmpty &&
                     procedure.isNotEmpty) {
-                  Map<String, dynamic> ingredientsMap =
+                  List<Map<String, dynamic>>  ingredientsList =
                       json.decode(ingredients);
                   Recipe newRecipe = Recipe(
                     id: 1, // ここでIDを適切に設定する必要があります
                     name: name,
                     category: _selectedCategory,
-                    ingredients: ingredientsMap,
+                    ingredients: ingredientsList,
                     procedure: procedure,
                   );
 
@@ -100,7 +100,7 @@ class _AddRecipePageState extends State<AddRecipePage> {
                       backgroundColor: Colors.red,
                     ),
                   );
-                }
+                }*/
               },
               child: const Text('追加'),
             ),

@@ -1,3 +1,4 @@
+/*
 // recipe.dart
 import 'package:kondate_app/models/recipe.dart';
 
@@ -136,3 +137,4 @@ List<Recipe> recipes = [
 ];
 
   // これで、`Recipe` クラスのリストが生成されます。
+*/
