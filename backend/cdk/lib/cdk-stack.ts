@@ -68,6 +68,36 @@ export class CdkStack extends Stack {
         TABLE_NAME: ingredientTable.tableName,
       },
     });
+
+    const postIngredientsLambda = new lambda.Function(this, 'PostIngredientsLambda', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      code: lambda.Code.fromAsset('../../apis/recipes/postIngredients.ts'),
+      handler: 'index.handler',
+      role: lambdaDynamoRole,
+      environment: {
+        TABLE_NAME: ingredientTable.tableName,
+      },
+    });
+
+    const putIngredientsLambda = new lambda.Function(this, 'PutIngredientsLambda', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      code: lambda.Code.fromAsset('../../apis/ingredients/putIngredients.ts'),
+      handler: 'index.handler',
+      role: lambdaDynamoRole,
+      environment: {
+        TABLE_NAME: ingredientTable.tableName,
+      },
+    });
+
+    const deleteIngredientsLambda = new lambda.Function(this, 'deleteIngredients', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      code: lambda.Code.fromAsset('../../apis/ingredients/deleteRecipes.ts'),
+      handler: 'index.handler',
+      role: lambdaDynamoRole,
+      environment: {
+        TABLE_NAME: ingredientTable.tableName,
+      },
+    });
     
     const getRecipesLambda = new lambda.Function(this, 'GetRecipesLambda', {
       runtime: lambda.Runtime.NODEJS_18_X,
@@ -119,6 +149,17 @@ export class CdkStack extends Stack {
       },
     });
 
+    const initializeLambda = new lambda.Function(this, 'InitializeLambda', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      code: lambda.Code.fromAsset('../../apis/initialize.ts'),
+      handler: 'index.handler',
+      role: lambdaDynamoRole,
+      environment: {
+        RECIPE_TABLE_NAME: recipeTable.tableName,
+        INGREDIENT_TABLE_NAME: ingredientTable.tableName
+      },
+    });
+
     /** ----------------------------------------
      * APIGateway作成
      ---------------------------------------- */
@@ -126,7 +167,12 @@ export class CdkStack extends Stack {
       restApiName: 'RecipeService',
     });
 
-    api.root.addResource('ingredients').addMethod('GET', new apigateway.LambdaIntegration(getIngredientsLambda));
+    const ingredients = api.root.addResource('ingredients')
+    ingredients.addMethod('GET', new apigateway.LambdaIntegration(getIngredientsLambda))
+    ingredients.addMethod('POST', new apigateway.LambdaIntegration(postIngredientsLambda))
+    ingredients.addMethod('PUT', new apigateway.LambdaIntegration(putIngredientsLambda))
+    ingredients.addMethod('DELETE', new apigateway.LambdaIntegration(deleteIngredientsLambda))
+
 
     const recipes = api.root.addResource('recipes');
     recipes.addMethod('GET', new apigateway.LambdaIntegration(getRecipesLambda));
@@ -137,6 +183,8 @@ export class CdkStack extends Stack {
     recipe.addMethod('DELETE', new apigateway.LambdaIntegration(deleteRecipesLambda));
 
     recipes.addResource('proposal').addMethod('GET', new apigateway.LambdaIntegration(getRecipeProposalLambda));
+
+    api.root.addResource('initialize').addMethod('GET', new apigateway.LambdaIntegration(initializeLambda));
   
     const usagePlan = api.addUsagePlan(props!.constant.apigateway.usagePlan);
     usagePlan.addApiStage({ stage: api.deploymentStage });
