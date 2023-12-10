@@ -35,7 +35,7 @@ class Recipe {
 class RecipeExceptId {
   String name;
   String category;
-  List<Map<String,dynamic>> ingredients;
+  String ingredients;
   String procedure;
 
   RecipeExceptId({

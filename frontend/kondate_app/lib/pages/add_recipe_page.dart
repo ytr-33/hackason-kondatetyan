@@ -125,7 +125,7 @@ class AddRecipePage extends HookWidget {
               decoration: const InputDecoration(labelText: '手順'),
             ),
             const SizedBox(height: 16.0),
-
+/*
             Consumer(
               builder: (context, ref, _) {
                 return ElevatedButton(
@@ -178,7 +178,7 @@ class AddRecipePage extends HookWidget {
                   },
                 );
               },
-            ),
+            ),*/
           ],
         ),
       ),

@@ -109,7 +109,7 @@ Future<void> putRecipeToApi(Recipe recipe) async {
   RecipeExceptId recipeExceptId = RecipeExceptId(
     name: recipe.name,
     category: recipe.category,
-    ingredients: recipe.ingredients,
+    ingredients: recipe.ingredients.toString(),
     procedure: recipe.procedure,
   );
 
