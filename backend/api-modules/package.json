@@ -24,6 +24,7 @@
     "@api-modules/util": "file:./util/src",
     "@aws-sdk/client-dynamodb": "^3.462.0",
     "@aws-sdk/lib-dynamodb": "^3.464.0",
-    "aws-lambda": "^1.0.7"
+    "aws-lambda": "^1.0.7",
+    "openai": "^4.20.1"
   }
 }

@@ -1,14 +1,20 @@
 import { DynamoDbWrapper } from "../dynamoDbWrapper"
 import {Obj} from "@api-modules/util/ObjectUtil"
 import { StringUtil } from "@api-modules/util/stringUtil"
-import {DynamoDbUtil} from "@api-modules/util/dyanamoDbUtil"
+import {DynamoDbUtil,DynamoObjectList} from "@api-modules/util/dyanamoDbUtil"
 
-type  Recipe = {
+export type Recipe = {
+    id?:number;
     name?:string;
     category?:string;
     ingredients?:string;
     procedure?:string;
 }
+
+interface PercentageResult {
+    index: number;
+    percentage: number;
+  }
 
 export class RecipesModel extends DynamoDbWrapper {
     private readonly tableName;
@@ -21,7 +27,7 @@ export class RecipesModel extends DynamoDbWrapper {
      * 現状の料理リストを取得
      * @returns 料理リスト
      */
-    public async scanAll ():Promise<any> {
+    public async scanAll ():Promise<Recipe[]> {
         const scanOutput = await this.dynamoDbClinet.scan({
             TableName: this.tableName
         })
@@ -29,8 +35,10 @@ export class RecipesModel extends DynamoDbWrapper {
         if (!scanOutput.Items) throw new Error("unexpected Error")
 
         const items = DynamoDbUtil.convertItemsToObject(scanOutput.Items)
-        return items
+        return items as Recipe[]
     }
+
+    
 
         /**
      * 新しい食材を作成
@@ -92,5 +100,91 @@ export class RecipesModel extends DynamoDbWrapper {
             }
         })
     }
+
+
+    // idを抽出して配列に格納する関数
+    public  extractIds(recipes: Recipe[]): number[][] {
+    const result: number[][] = [];
+  
+    if ( !recipes ) throw Error("type error")
+
+    recipes.forEach((recipe) => {
+      try {
+        if(recipe.ingredients){
+            const ingredientsArray = JSON.parse(recipe.ingredients);
+        
+            if (Array.isArray(ingredientsArray)) {
+            const ids = ingredientsArray.map((ingredient: any) => ingredient.id);
+            result.push(ids);
+            }
+        }
+      } catch (error) {
+        console.error(`Error parsing ingredients for recipe id ${recipe.id}: ${error}`);
+      }
+    });
+  
+    return result;
+  }
+
+  public createProposal (proposalIdList:number[],candidateRecipes:Recipe[]):Recipe[]{
+    const candidateIngredientIdList = this.extractIds(candidateRecipes)
+
+    const result = this.calculateMatchPercentages(candidateIngredientIdList,proposalIdList)
+    
+
+
+    const proposalList = this.filterRecipesByPercentage(candidateRecipes,result)
+
+    console.log(proposalList)
+    return proposalList
+
+  }
+  
+  public calculateMatchPercentages(
+    array1: number[][],
+    array2: number[]
+  ): PercentageResult[] {
+    // 結果を格納するための配列
+    const result: { index: number; percentage: number }[] = [];
+  
+    // 各要素ごとに処理
+    array1.forEach((subArray, index) => {
+      // array2に含まれる要素の数を数える
+      const matchingCount = subArray.reduce(
+        (count, element) => (array2.includes(element) ? count + 1 : count),
+        0
+      );
+  
+      // 一致率を計算
+      const percentage = (matchingCount / subArray.length) * 100;
+  
+      // 結果を配列に追加
+      result.push({ index, percentage });
+    });
+  
+    // パーセントが大きい順にソート
+    result.sort((a, b) => b.percentage - a.percentage);
+  
+    // 上位最大5個まで取得
+    const topResults = result.slice(0, 5);
+  
+    return topResults;
+  }
+
+  public filterRecipesByPercentage(
+    recipes: Recipe[],
+    percentageResults: PercentageResult[],
+  ): Recipe[] {
+    const threshold = 50
+    // threshold以上の一致率を持つ結果のindexを取得
+    const matchingIndices = percentageResults
+      .filter((result) => result.percentage >= threshold)
+      .map((result) => result.index);
+  
+    // 対応するレシピを抽出
+    const filteredRecipes = matchingIndices.map((index) => recipes[index]);
+  
+    return filteredRecipes;
+  }
 
 }
