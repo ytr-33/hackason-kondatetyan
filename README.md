@@ -43,4 +43,16 @@
   -  サーバー構築費用などの兼ね合いにより優先度低
 
 ### 今後の拡張性
-- 
+
+
+### モックサーバーについて
+
+prism-cliのインストール
+```
+npm install -g @stoplight/prism-cli
+```
+
+モックサーバーを起動する
+```
+prism mock ./document/api/kondateTyanApi.yaml
+```

@@ -11,7 +11,7 @@ class Ingredient {
     required this.unit,
   });
 
-  factory Ingredient.fromJson(Map<String, dynamic> json) {
+  factory Ingredient.fromJson(Map<int, dynamic> json) {
     return Ingredient(
       id: json['id'],
       name: json['name'],

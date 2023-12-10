@@ -1,4 +1,4 @@
-/*// choice_page.dart
+// choice_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kondate_app/dialogs/delete_confirmation_dialog.dart';
@@ -38,73 +38,6 @@ class ChoicePage extends ConsumerWidget {
       });
     }
 
-    Widget ingredientsColumn = ingredients.when(
-      data: (ingredients) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // カテゴリごとに展開可能なリストを表示
-            for (String category in ingredientCategories)
-              ExpansionTile(
-                title: Text(category),
-                children: [
-                  // カテゴリに属する材料ごとにリストタイルを表示
-                  for (Ingredient ingredient in ingredients.values)
-                    if (ingredient.category == category)
-                      // カスタムウィジェットを利用して材料のリストタイルを表示
-                      IngredientListTile(
-                        ingredient: ingredient,
-                        isSelected: selectedIngredients.contains(ingredient.id),
-                        onCheckboxChanged: (value) {
-                          if (value == true) {
-                            // チェックが入ったときの処理
-                            final notifier = ref.read(
-                                selectedIngredientsNotifierProvider.notifier);
-                            notifier.addState(ingredient.id);
-                          } else {
-                            // チェックが外れたときの処理
-                            final notifier = ref.read(
-                                selectedIngredientsNotifierProvider.notifier);
-                            notifier.removeState(ingredient.id);
-                          }
-                        },
-                        onEditPressed: () {
-                          // 編集画面に遷移
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => EditIngredientPage(
-                                ingredientName: ingredient.name,
-                                ingredientCategory: ingredient.category,
-                                ingredientUnit: ingredient.unit,
-                              ),
-                            ),
-                          );
-                        },
-                        onDeletePressed: () {
-                          // 削除確認ダイアログを表示
-                          showDeleteConfirmationDialog(ingredient.name);
-                        },
-                      ),
-                ],
-              ),
-          ],
-        );
-        // 成功時の処理
-      },
-      loading: () {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-        // ロード中の処理
-      },
-      error: (e, s) {
-        return Center(
-          child: Text(e.toString()),
-        );
-        // エラー時の処理
-      },
-    );
-
     // RiverpodのProviderから選択された材料のリストを取得
 
     // 材料の選択をクリアする関数
@@ -134,15 +67,7 @@ class ChoicePage extends ConsumerWidget {
               children: [
                 for (int id in selectedIngredients)
                   Text(
-                    ingredients
-                        .when(
-                          data: (ingredients) {
-                            return ingredients[id]!.name;
-                          },
-                          loading: () => 'ロード中',
-                          error: (e, s) => 'エラー',
-                        )
-                        .toString(),
+                    ingredients[id]?.name ?? '',
                   ),
               ],
             ),
@@ -159,7 +84,56 @@ class ChoicePage extends ConsumerWidget {
       );
     }
 
-    // 削除確認ダイアログを表示する関数
+    final loopColumn = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (String category in ingredientCategories)
+          ExpansionTile(
+            title: Text(category),
+            children: [
+              // カテゴリに属する材料ごとにリストタイルを表示
+              for (Ingredient? ingredient in ingredients.values)
+                if (ingredient!.category == category )
+                  // カスタムウィジェットを利用して材料のリストタイルを表示
+                  IngredientListTile(
+                    ingredient: ingredient,
+                    isSelected: selectedIngredients.contains(ingredient.id),
+                    onCheckboxChanged: (value) {
+                      if (value == true) {
+                        // チェックが入ったときの処理
+                        final notifier = ref
+                            .read(selectedIngredientsNotifierProvider.notifier);
+                        notifier.addState(ingredient.id);
+                      } else {
+                        // チェックが外れたときの処理
+                        final notifier = ref
+                            .read(selectedIngredientsNotifierProvider.notifier);
+                        notifier.removeState(ingredient.id);
+                      }
+                    },
+                    onEditPressed: () {
+                      // 編集画面に遷移
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => EditIngredientPage(
+                            ingredientName: ingredient.name,
+                            ingredientCategory: ingredient.category,
+                            ingredientUnit: ingredient.unit,
+                          ),
+                        ),
+                      );
+                    },
+                    onDeletePressed: () {
+                      // 削除確認ダイアログを表示
+                      showDeleteConfirmationDialog(ingredient.name);
+                    },
+                  )
+                else if (ingredient.category != category)
+                  Container(),
+            ],
+          ),
+      ],
+    );
 
     // カスタムウィジェットとしてSpeedDialを利用
     return Scaffold(
@@ -168,7 +142,7 @@ class ChoicePage extends ConsumerWidget {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              child: ingredientsColumn,
+              child: loopColumn,
             ),
           ),
         ],
@@ -197,4 +171,3 @@ class ChoicePage extends ConsumerWidget {
     );
   }
 }
-*/

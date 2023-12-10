@@ -8,7 +8,7 @@ info:
       url: http://www.example.com/support
       email: hogehoge@gmail.com
 servers:
-  - url: https://example.com/api/v1
+  - url: https://x3mh57lyz4.execute-api.ap-northeast-1.amazonaws.com/prod/apis
 tags:
   - name: ingredients
     description: 食材関係
@@ -18,10 +18,14 @@ tags:
 paths:
   /ingredients:
     $ref: "./apis/ingredients.yaml"
+  /ingredients/{ingredient_id}:
+   $ref: "./apis/ingredients/ingredient_id.yaml"
   
   /recipes:
     $ref: "./apis/recipes.yaml"
   /recipes/{recipe_id}:
     $ref: "./apis/recipes/recipe_id.yaml"
+
+
   /recipes/proposal:
     $ref: "./apis/recipes/proposal.yaml"
