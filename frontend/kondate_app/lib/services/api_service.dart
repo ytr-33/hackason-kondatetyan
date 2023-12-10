@@ -80,8 +80,6 @@ Future<Map<num, Recipe>> getRecipeFromApi() async {
     // jsonデータをパース
     final List jsonData = json.decode(utf8.decode(response.bodyBytes));
 
-    debugPrint('??????$jsonData');
-
     for (final item in jsonData) {
       debugPrint('item:${item['ingredients'].runtimeType}');
       recipeMap[item['id']] = Recipe.fromJson(item);
@@ -94,33 +92,6 @@ Future<Map<num, Recipe>> getRecipeFromApi() async {
   }
 }
 
-/*
-Future<Map<num, Recipe>> getRecipeFromApi() async {
-  final response = await http.get(Uri.parse('$apiRoute/recipes'));
-  Map<num, Recipe> recipeMap = {};
-
-  if (response.statusCode == 200) {
-    // jsonデータをパース
-    final List jsonData =
-        json.decode(utf8.decode(response.bodyBytes)) as List<Map<String, dynamic>>;
-    debugPrint('?///////????jsonData?????:${jsonData.toString()}');
-
-    try {
-      for (final item in jsonData) {
-        recipeMap[item['id']] = Recipe.fromJson(item);
-      }
-    } catch (e) {
-      debugPrint(e.toString());
-    }
-
-    debugPrint('!!!!recipeMap!!!!!:${recipeMap.toString()}');
-
-    return recipeMap;
-  } else {
-    throw Exception('Failed to load recipe');
-  }
-}
-*/
 Future<num> postRecipeToApi(RecipeExceptId recipeExceptId) async {
   var request = json.encode(recipeExceptId);
   final requestUtf = utf8.encode(request);
@@ -136,7 +107,6 @@ Future<num> postRecipeToApi(RecipeExceptId recipeExceptId) async {
   }
 }
 
-/*
 Future<void> putRecipeToApi(Recipe recipe) async {
   RecipeExceptId recipeExceptId = RecipeExceptId(
     name: recipe.name,
@@ -158,7 +128,7 @@ Future<void> putRecipeToApi(Recipe recipe) async {
     throw Exception('Failed to put ingredient');
   }
 }
-*/
+
 Future<void> deleteRecipeToApi(num id) async {
   final response = await http.delete(Uri.parse('$apiRoute/recipes/$id'));
   if (response.statusCode == 204) {

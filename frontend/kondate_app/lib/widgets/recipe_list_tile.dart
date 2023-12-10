@@ -21,7 +21,20 @@ class RecipeListTile extends StatelessWidget {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(recipe.name),
+          Container(
+            padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.restaurant,
+                  color: Colors.grey,
+                ),
+                Text(
+                  recipe.name,
+                ),
+              ],
+            ),
+          ),
           Row(
             children: [
               IconButton(
