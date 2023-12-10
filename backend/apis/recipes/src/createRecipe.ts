@@ -1,4 +1,4 @@
-import { IngredientsModel } from "@api-modules/dynamo-db/models/ingredientsModel";
+import { RecipesModel } from "@api-modules/dynamo-db/models/recipesModel";
 import {ApiGatewayEventPaser } from "@api-modules/api-gateway";
 
 export const handler = async (event: any) => {
@@ -6,25 +6,23 @@ export const handler = async (event: any) => {
 
   const eventParser = new ApiGatewayEventPaser(event)
 
-  const ingredientId = Number(eventParser.getPathParamter("ingredient_id"))
   const body = eventParser.getParsedBody() as {[key:string]:string}
 
   // TODO：余裕があればバリデーション追加
 
-  const model = new IngredientsModel();
+  const model = new RecipesModel();
 
-  const items = await model.UpdateItem(ingredientId,body)
+  const createdId = await model.createItem(body)
 
   // 成功時のレスポンスを返す
   return {
-    statusCode: 201,
+    statusCode: 200,
     headers: {
       "Access-Control-Allow-Headers" : "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "*"
   },
-    body: JSON.stringify(items),
-
+    body: createdId,
   };
 };
 

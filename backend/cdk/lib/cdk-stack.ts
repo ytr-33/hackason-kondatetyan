@@ -29,6 +29,8 @@ export class CdkStack extends Stack {
      ---------------------------------------- */
     const lambdaEnvironmtntCommon = {
       REGION: props!.constant.awsRegion,
+      INGREDIENTS_TABLE_NAME : "tbl_ingredients",
+      RECIPES_TABLE_NAME : "tbl_recipes",
     };
     /** ----------------------------------------
      * Lambda個別設定用環境変数
@@ -38,16 +40,61 @@ export class CdkStack extends Stack {
     /** ----------------------------------------
      * Lambda設定＋APIGateway設定
      ---------------------------------------- */
-    const lambdaConfig: ExtendLambdaConfig[] = [
+    const lambdaConfig: LambdaConfig[] = [
       {
-        name: "getUser",
-        filePath: "../apis/user/src/getUser.ts",
+        name: "getIngredientList",
+        filePath: "../apis/ingredients/src/getIngredientList.ts",
         environment: {
           ...lambdaEnvironmtntCommon,
         },
-        apiGateway: {
-          method:"GET",
-          resourcePath: "user",
+      },
+      {
+        name: "createIngredient",
+        filePath: "../apis/ingredients/src/createIngredient.ts",
+        environment: {
+          ...lambdaEnvironmtntCommon,
+        },
+      },
+      {
+        name: "updateIngredient",
+        filePath: "../apis/ingredients/{ingredient_id}/src/updateIngredient.ts",
+        environment: {
+          ...lambdaEnvironmtntCommon,
+        },
+      },
+      {
+        name: "deleteIngredient",
+        filePath: "../apis/ingredients/{ingredient_id}/src/deleteIngredient.ts",
+        environment: {
+          ...lambdaEnvironmtntCommon,
+        },
+      },
+      {
+        name: "getRecipeList",
+        filePath: "../apis/recipes/src/getRecipeList.ts",
+        environment: {
+          ...lambdaEnvironmtntCommon,
+        },
+      },
+      {
+        name: "createRecipe",
+        filePath: "../apis/recipes/src/createRecipe.ts",
+        environment: {
+          ...lambdaEnvironmtntCommon,
+        },
+      },
+      {
+        name: "updateRecipe",
+        filePath: "../apis/recipes/{recipe_id}/src/updateRecipe.ts",
+        environment: {
+          ...lambdaEnvironmtntCommon,
+        },
+      },
+      {
+        name: "deleteRecipe",
+        filePath: "../apis/recipes/{recipe_id}/src/deleteRecipe.ts",
+        environment: {
+          ...lambdaEnvironmtntCommon,
         },
       },
     ];
@@ -130,12 +177,41 @@ export class CdkStack extends Stack {
     // リソースパスを作成
     const apiRootPath = apigateway.root.addResource("apis");
 
-    for(const curLambdaConfig of lambdaConfig){
-      if (!apiGW[curLambdaConfig.name]) {apiGW[curLambdaConfig.name] = {}; }
-      apiGW[curLambdaConfig.name].resourcePath = apiRootPath.addResource(curLambdaConfig.apiGateway.resourcePath);
-      apiGW[curLambdaConfig.name].integration = new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]);
-      apiGW[curLambdaConfig.name].resourcePath.addMethod(curLambdaConfig.apiGateway.method,apiGW[curLambdaConfig.name].integration);
-    }
-    //
+    let curLambdaConfig:any ;
+    const resourcePathIngredients = apiRootPath.addResource("ingredients");
+
+    // GET
+    curLambdaConfig = lambdaConfig[0]
+    resourcePathIngredients.addMethod("GET",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name])
+      );
+    //POST
+    curLambdaConfig = lambdaConfig[1]
+    resourcePathIngredients.addMethod("POST", new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name])
+      );
+
+    const resourcePathIngredient = resourcePathIngredients.addResource("{ingredient_id}");
+    // PUT
+    curLambdaConfig = lambdaConfig[2]
+    resourcePathIngredient.addMethod("PUT",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
+    // DELETE
+    curLambdaConfig = lambdaConfig[3]
+    resourcePathIngredient.addMethod("DELETE",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
+
+   const resourcePathRecipes = apiRootPath.addResource("recipes");
+
+   // GET
+   curLambdaConfig = lambdaConfig[4]
+   resourcePathRecipes.addMethod("GET",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
+   //POST
+   curLambdaConfig = lambdaConfig[5]
+   resourcePathRecipes.addMethod("POST",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
+
+   const resourcePathRecipe = resourcePathRecipes.addResource("{recipe_id}");
+   // PUT
+   curLambdaConfig = lambdaConfig[6]
+   resourcePathRecipe.addMethod("PUT",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
+   // DELETE
+   curLambdaConfig = lambdaConfig[7]
+   resourcePathRecipe.addMethod("DELETE", new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
   }
 }
