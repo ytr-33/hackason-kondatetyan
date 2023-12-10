@@ -1,6 +1,7 @@
 // lib/dialogs/delete_confirmation_dialog.dart
 import 'package:flutter/material.dart';
 import 'package:kondate_app/models/ingredient.dart';
+import 'package:kondate_app/pages/main_page.dart';
 
 class DeleteIngredientConfirmationDialog {
   static void show(BuildContext context, Ingredient ingredient,
@@ -19,9 +20,19 @@ class DeleteIngredientConfirmationDialog {
               child: const Text('キャンセル'),
             ),
             TextButton(
-              onPressed: () {
-                onConfirm();
-                Navigator.of(context).pop();
+              onPressed: () async {
+                await onConfirm();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${ingredient.name}を削除しました'),
+                  ),
+                );
+
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => MainPage(),
+                  ),
+                );
               },
               child: const Text('削除'),
             ),

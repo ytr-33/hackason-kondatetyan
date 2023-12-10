@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kondate_app/configs/constants.dart';
 import 'package:kondate_app/models/ingredient.dart';
+import 'package:kondate_app/pages/main_page.dart';
 import 'package:kondate_app/providers/ingredient_provider.dart';
 import 'package:kondate_app/services/api_service.dart';
 
@@ -59,6 +60,7 @@ class EditIngredientPage extends HookWidget {
               builder: (context, ref, _) {
                 return ElevatedButton(
                   onPressed: () async {
+                    final currentContext = context;
                     // 変更を保存
                     final updateIngredient = Ingredient(
                       id: ingredient.id,
@@ -73,6 +75,17 @@ class EditIngredientPage extends HookWidget {
                     final notifier =
                         ref.read(ingredientNotifierProvider.notifier);
                     notifier.updateIngredient(updateIngredient);
+
+                    ScaffoldMessenger.of(currentContext).showSnackBar(
+                      SnackBar(
+                        content: Text('id:${ingredient.id} を更新しました'),
+                      ),
+                    );
+                    Navigator.of(currentContext).push(
+                      MaterialPageRoute(
+                        builder: (currentContext) => MainPage(),
+                      ),
+                    );
                   },
                   child: const Text('変更を保存'),
                 );

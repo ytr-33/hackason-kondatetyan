@@ -53,14 +53,15 @@ class _DataInitView extends HookWidget {
     // 適当に 3秒まつ (スプラッシュ画面の確認ができたら消してもOK)
     //const sec3 = Duration(seconds: 3);
     //await Future.delayed(sec3);
+
     await ingredientNotifier.fetchInitIngredient().catchError((err) {
       debugPrint(err);
     });
-    
+
     await recipeNotifier.fetchInitRecipe().catchError((err) {
       debugPrint(err);
     });
-    
+
 
     // PokeAPIからingredientデータを取得
     /*
@@ -72,7 +73,7 @@ class _DataInitView extends HookWidget {
 
     // メイン画面を準備
     final route = MaterialPageRoute(builder: (context) {
-      return const MainPage();
+      return MainPage();
     });
 
     // メイン画面へ移動

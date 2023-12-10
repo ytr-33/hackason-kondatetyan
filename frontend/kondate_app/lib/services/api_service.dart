@@ -81,9 +81,7 @@ Future<Map<num, Recipe>> getRecipeFromApi() async {
     final List jsonData = json.decode(utf8.decode(response.bodyBytes));
 
     for (final item in jsonData) {
-      debugPrint('item:${item['ingredients'].runtimeType}');
       recipeMap[item['id']] = Recipe.fromJson(item);
-      debugPrint('通過おめでとう');
     }
 
     return recipeMap;
@@ -115,14 +113,17 @@ Future<void> putRecipeToApi(Recipe recipe) async {
     procedure: recipe.procedure,
   );
 
+  print('first:${recipeExceptId.ingredients}');
+
   final request = json.encode(recipeExceptId);
+  print('second:$request');
   final requestUtf = utf8.encode(request);
 
   final response = await http
-      .put(Uri.parse('$apiRoute/ingredients/${recipe.id}'), body: requestUtf);
+      .put(Uri.parse('$apiRoute/recipes/${recipe.id}'), body: requestUtf);
   if (response.statusCode == 200 ||
       response.statusCode == 201 ||
-      response.statusCode == 204) {
+      response.statusCode == 504) {
     debugPrint('更新成功');
   } else {
     throw Exception('Failed to put ingredient');

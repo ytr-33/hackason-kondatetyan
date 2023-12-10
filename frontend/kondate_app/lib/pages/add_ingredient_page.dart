@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kondate_app/models/ingredient.dart';
 import 'package:kondate_app/configs/constants.dart';
-import 'package:kondate_app/pages/choice_page.dart';
+import 'package:kondate_app/pages/main_page.dart';
 import 'package:kondate_app/providers/ingredient_provider.dart';
 import 'package:kondate_app/services/api_service.dart';
 
@@ -19,7 +19,6 @@ class AddIngredientPage extends HookWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Ingredient'),
-
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -87,14 +86,14 @@ class AddIngredientPage extends HookWidget {
                     unitController.clear();
 
                     ScaffoldMessenger.of(currentContext).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            '${newIngredient.name} が ${newIngredient.category} に追加されました'),
+                      const SnackBar(
+                        content: Text('材料が追加されました'),
                       ),
                     );
+
                     Navigator.of(currentContext).push(
                       MaterialPageRoute(
-                        builder: (context) => ChoicePage(),
+                        builder: (currentContext) => MainPage(),
                       ),
                     );
                   },
