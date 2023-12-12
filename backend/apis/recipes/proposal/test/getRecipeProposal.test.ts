@@ -5,7 +5,7 @@ import { APIGatewayEventMockBuilder} from "@api-modules/test-util";
 describe("正常系",()=>{
     test("値の取得",async()=>{
         const event = APIGatewayEventMockBuilder.createAPIGatewayEventMock({
-            body : [1701954786.822,1701579808]
+            body : [1646416616464,1701579808]
         })
         const response = await handler(event)
 

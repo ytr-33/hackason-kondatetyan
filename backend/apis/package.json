@@ -28,6 +28,7 @@
     "@api-modules/dynamo-db": "file:../api-modules/dynamo-db/src",
     "@api-modules/test-util": "file:../api-modules/test-util/src",
     "@api-modules/util": "file:../api-modules/util/src",
-    "@aws-sdk/client-dynamodb": "^3.414.0"
+    "@aws-sdk/client-dynamodb": "^3.414.0",
+    "openai": "^4.20.1"
   }
 }

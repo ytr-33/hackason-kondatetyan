@@ -111,6 +111,7 @@ export class RecipesModel extends DynamoDbWrapper {
     recipes.forEach((recipe) => {
       try {
         if(recipe.ingredients){
+          console.log(recipe.ingredients)
             const ingredientsArray = JSON.parse(recipe.ingredients);
         
             if (Array.isArray(ingredientsArray)) {
@@ -131,8 +132,6 @@ export class RecipesModel extends DynamoDbWrapper {
 
     const result = this.calculateMatchPercentages(candidateIngredientIdList,proposalIdList)
     
-
-
     const proposalList = this.filterRecipesByPercentage(candidateRecipes,result)
 
     console.log(proposalList)
