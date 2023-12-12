@@ -104,6 +104,14 @@ export class CdkStack extends Stack {
           ...lambdaEnvironmtntCommon,
         },
       },
+      {
+        name: "createAiRecipeProposal",
+        filePath: "../apis/recipes/proposal/ai-proposal/src/createAiRecipeProposal.ts",
+        environment: {
+          OPENAI_API_KEY:"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",
+          ...lambdaEnvironmtntCommon,
+        },
+      },
     ];
     /** ----------------------------------------
      * IAMロール設定
@@ -228,6 +236,12 @@ export class CdkStack extends Stack {
    // GET
    curLambdaConfig = lambdaConfig[8]
    resourcePathRecipeProposal.addMethod("POST",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
+  
+      
+   const resourcePathAiRecipeProposal = resourcePathRecipeProposal.addResource("ai-proposal");
+   // GET
+   curLambdaConfig = lambdaConfig[9]
+   resourcePathAiRecipeProposal.addMethod("POST",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
   
    
   }

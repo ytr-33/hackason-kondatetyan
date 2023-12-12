@@ -55,7 +55,7 @@ export class APIGatewayEventMockBuilder {
                 "domainName": "testPrefix.testDomainName",
                 "apiId": "x3mh57lyz4"
             },
-            "body": JSON.stringify(body),
+            "body": body,
             "isBase64Encoded": false
         }
     }

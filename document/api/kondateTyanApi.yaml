@@ -29,3 +29,5 @@ paths:
 
   /recipes/proposal:
     $ref: "./apis/recipes/proposal.yaml"
+  /recipes/proposal/ai-proposal:
+    $ref: "./apis/recipes/proposal/ai-proposal.yaml"

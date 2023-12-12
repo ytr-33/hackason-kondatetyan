@@ -4,6 +4,7 @@ import { StringUtil } from "@api-modules/util/stringUtil"
 import {DynamoDbUtil} from "@api-modules/util/dyanamoDbUtil"
 
 type Ingredient = {
+    id?:number
     name?:string;
     category?:string;
     unit?:string;
@@ -20,7 +21,7 @@ export class IngredientsModel extends DynamoDbWrapper{
      * 現状の食材リストを取得
      * @returns 食材リスト
      */
-    public async scanAll ():Promise<any> {
+    public async scanAll ():Promise<Ingredient[]> {
         const scanOutput = await this.dynamoDbClinet.scan({
             TableName: this.tableName
         })
@@ -28,12 +29,25 @@ export class IngredientsModel extends DynamoDbWrapper{
         if (!scanOutput.Items) throw new Error("unexpected Error")
 
         const items = DynamoDbUtil.convertItemsToObject(scanOutput.Items)
-        return items
+        return items as Ingredient[]
     }
 
-    // public async getNamesFromIds (ids:number[]):Promise<string[]> {
-    //     const allIngredients = this.scanAll();
-    // }
+    public async getNamesFromIds (ids:number[]):Promise<any> {
+        const allIngredients  = await this.scanAll();
+        console.log(allIngredients)
+
+        const result: string[] = [];
+
+        // 引数のIDと一致する項目を検索し、nameを結果配列に追加
+        for (const id of ids) {
+          const match = allIngredients.find(item => item.id === id);
+          if (match?.name) {
+            result.push(match!.name);
+          }
+        }
+      
+        return result;
+    }
 
     /**
      * 新しい食材を作成
