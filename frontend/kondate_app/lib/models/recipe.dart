@@ -25,7 +25,9 @@ class Recipe {
   static List<Map<String, dynamic>> _parseIngredients(String ingredients) {
     final decodedList = json.decode(ingredients) as List<dynamic>;
     List<Map<String, dynamic>> ingredientsList = [];
+    print('ingredients: $ingredients');
     for (final item in decodedList) {
+      print(item.toString());
       ingredientsList.add(item as Map<String, dynamic>);
     } 
     return ingredientsList;

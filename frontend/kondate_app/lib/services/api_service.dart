@@ -79,8 +79,9 @@ Future<Map<num, Recipe>> getRecipeFromApi() async {
   if (response.statusCode == 200) {
     // jsonデータをパース
     final List jsonData = json.decode(utf8.decode(response.bodyBytes));
-
+    
     for (final item in jsonData) {
+      print(item['ingredients'].toString());
       recipeMap[item['id']] = Recipe.fromJson(item);
     }
 
@@ -91,6 +92,7 @@ Future<Map<num, Recipe>> getRecipeFromApi() async {
 }
 
 Future<num> postRecipeToApi(RecipeExceptId recipeExceptId) async {
+  print('ToApi1:${recipeExceptId.ingredients}}');
   var request = json.encode(recipeExceptId);
   final requestUtf = utf8.encode(request);
 

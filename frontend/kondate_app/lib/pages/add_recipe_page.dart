@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -125,31 +127,32 @@ class AddRecipePage extends HookWidget {
               decoration: const InputDecoration(labelText: '手順'),
             ),
             const SizedBox(height: 16.0),
-/*
             Consumer(
               builder: (context, ref, _) {
                 return ElevatedButton(
                   child: const Text('追加'),
                   onPressed: () async {
                     final currentContext = context;
+                    final ingredientList = [
+                      {
+                        "id": num.parse(selectedIngredient1Id.value),
+                        "amount": num.parse(
+                            selectedIngredient1AmountController.value.text)
+                      },
+                      {
+                        "id": num.parse(selectedIngredient2Id.value),
+                        "amount": num.parse(
+                            selectedIngredient2AmountController.value.text)
+                      },
+                    ];
 
                     RecipeExceptId newRecipe = RecipeExceptId(
                       name: nameController.value.text,
                       category: selectedCategory.value,
-                      ingredients: [
-                        {
-                          "id": selectedIngredient1Id.value,
-                          "amount": num.parse(
-                              selectedIngredient1AmountController.value.text),
-                        },
-                        {
-                          "id": selectedIngredient2Id.value,
-                          "amount": num.parse(
-                              selectedIngredient2AmountController.value.text),
-                        },
-                      ],
+                      ingredients: jsonEncode(ingredientList),
                       procedure: procedureController.value.text,
                     );
+                    print('追加：${newRecipe.ingredients}');
 
                     final response = await postRecipeToApi(newRecipe);
 
@@ -157,7 +160,7 @@ class AddRecipePage extends HookWidget {
                       id: response,
                       name: newRecipe.name,
                       category: newRecipe.category,
-                      ingredients: newRecipe.ingredients,
+                      ingredients: ingredientList,
                       procedure: newRecipe.procedure,
                     );
 
@@ -178,7 +181,7 @@ class AddRecipePage extends HookWidget {
                   },
                 );
               },
-            ),*/
+            ),
           ],
         ),
       ),
