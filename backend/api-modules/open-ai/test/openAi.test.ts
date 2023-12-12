@@ -1,4 +1,4 @@
-import {accessOpenAI} from "../src/openAI"
+import {accessOpenAI} from "../../../apis/recipes/proposal/src/open-ai/openAI"
 
 describe("正常系", ()=>{
     test("テスト駆動",async()=>{

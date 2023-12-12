@@ -97,6 +97,13 @@ export class CdkStack extends Stack {
           ...lambdaEnvironmtntCommon,
         },
       },
+      {
+        name: "getRecipeProposal",
+        filePath: "../apis/recipes/proposal/src/getRecipeProposal.ts",
+        environment: {
+          ...lambdaEnvironmtntCommon,
+        },
+      },
     ];
     /** ----------------------------------------
      * IAMロール設定
@@ -180,6 +187,7 @@ export class CdkStack extends Stack {
     let curLambdaConfig:any ;
     const resourcePathIngredients = apiRootPath.addResource("ingredients");
 
+
     // GET
     curLambdaConfig = lambdaConfig[0]
     resourcePathIngredients.addMethod("GET",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name])
@@ -198,7 +206,7 @@ export class CdkStack extends Stack {
     resourcePathIngredient.addMethod("DELETE",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
 
    const resourcePathRecipes = apiRootPath.addResource("recipes");
-
+   
    // GET
    curLambdaConfig = lambdaConfig[4]
    resourcePathRecipes.addMethod("GET",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
@@ -213,5 +221,14 @@ export class CdkStack extends Stack {
    // DELETE
    curLambdaConfig = lambdaConfig[7]
    resourcePathRecipe.addMethod("DELETE", new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
+
+
+   
+   const resourcePathRecipeProposal = resourcePathRecipes.addResource("proposal");
+   // GET
+   curLambdaConfig = lambdaConfig[8]
+   resourcePathRecipeProposal.addMethod("POST",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
+  
+   
   }
 }

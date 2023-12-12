@@ -31,6 +31,10 @@ export class IngredientsModel extends DynamoDbWrapper{
         return items
     }
 
+    // public async getNamesFromIds (ids:number[]):Promise<string[]> {
+    //     const allIngredients = this.scanAll();
+    // }
+
     /**
      * 新しい食材を作成
      * @param item 食材の詳細
