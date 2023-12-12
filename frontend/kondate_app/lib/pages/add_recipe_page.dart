@@ -152,7 +152,6 @@ class AddRecipePage extends HookWidget {
                       ingredients: jsonEncode(ingredientList),
                       procedure: procedureController.value.text,
                     );
-                    print('追加：${newRecipe.ingredients}');
 
                     final response = await postRecipeToApi(newRecipe);
 

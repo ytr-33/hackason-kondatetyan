@@ -63,14 +63,6 @@ class _DataInitView extends HookWidget {
     });
 
 
-    // PokeAPIからingredientデータを取得
-    /*
-    for (int i = 1; i <= 10; i++) {
-      await notifier.fetchIngredient(i).catchError((err) {
-        debugPrint('API通信中にエラーが発生しました');
-      });
-    }*/
-
     // メイン画面を準備
     final route = MaterialPageRoute(builder: (context) {
       return MainPage();
@@ -79,9 +71,6 @@ class _DataInitView extends HookWidget {
     // メイン画面へ移動
     if (context.mounted) {
       Navigator.of(context).push(route);
-      /*for (int i = 1; i <= 10; i++) {
-       debugPrint('材料名：${notifier.ingredientMap[i]!.name}');
-      }*/
     }
   }
 

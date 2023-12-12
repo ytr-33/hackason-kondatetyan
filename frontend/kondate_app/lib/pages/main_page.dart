@@ -15,8 +15,6 @@ class MainPage extends ConsumerWidget {
     // 現在のページのインデックスと編集モードの状態を取得
     final currentPageIndex = ref.watch(currentPageNotifierProvider);
 
-    print(currentPageIndex);
-
     // ページのナビゲーションアイテム
     final List<PageNavigationDestination> destinations = [
       const PageNavigationDestination(

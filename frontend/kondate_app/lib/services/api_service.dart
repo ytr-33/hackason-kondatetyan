@@ -79,9 +79,8 @@ Future<Map<num, Recipe>> getRecipeFromApi() async {
   if (response.statusCode == 200) {
     // jsonデータをパース
     final List jsonData = json.decode(utf8.decode(response.bodyBytes));
-    
+
     for (final item in jsonData) {
-      print(item['ingredients'].toString());
       recipeMap[item['id']] = Recipe.fromJson(item);
     }
 
@@ -115,14 +114,11 @@ Future<void> putRecipeToApi(Recipe recipe) async {
     procedure: recipe.procedure,
   );
 
-  print('first:${recipeExceptId.ingredients}');
-
   final request = json.encode(recipeExceptId);
-  print('second:$request');
   final requestUtf = utf8.encode(request);
 
-  final response = await http
-      .put(Uri.parse('$apiRoute/recipes/${recipe.id}'), body: requestUtf);
+  final response = await http.put(Uri.parse('$apiRoute/recipes/${recipe.id}'),
+      body: requestUtf);
   if (response.statusCode == 200 ||
       response.statusCode == 201 ||
       response.statusCode == 504) {
@@ -141,17 +137,21 @@ Future<void> deleteRecipeToApi(num id) async {
   }
 }
 
+Future<List<dynamic>> postRecipeProposalFromApi(
+    List<num> selectedIngredients) async {
+  final request = utf8.encode(json.encode(selectedIngredients));
+  final response = await http.post(
+      Uri.parse(
+        '$apiRoute/recipes/proposal',
+      ),
+      body: request);
 
-
-// PokeAPIから材料を取得
-/*
-Future<Ingredient> getIngredientFromApi(int id) async {
-  final response = await http.get(Uri.parse('$apiRoute/pokemon/$id')); // PokeAPI
   if (response.statusCode == 200) {
-    debugPrint(response.body);
-    return Ingredient.fromJson(jsonDecode(response.body));
+    // jsonデータをパース
+    final answer = json.decode(utf8.decode(response.bodyBytes));
+
+    return answer;
   } else {
     throw Exception('Failed to load ingredient');
   }
 }
-*/

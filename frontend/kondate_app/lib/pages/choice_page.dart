@@ -1,4 +1,3 @@
-// choice_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kondate_app/dialogs/delete_ingredient_confirmation_dialog.dart';
@@ -144,11 +143,73 @@ class ChoicePage extends ConsumerWidget {
       floatingActionButton: CustomSpeedDial(
         // メニュー取得ボタン
         onGetMenuTap: () {
-          // メニュー画面に遷移
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            return ResultPage(selectedIngredients: selectedIngredients);
-          }));
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('選択された材料'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (num id in selectedIngredients)
+                      Text(
+                        ingredients[id]?.name ?? '',
+                      ),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('AIに聞く'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      try {
+                        final answer = await postRecipeProposalFromApi(
+                            selectedIngredients);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ResultPage(
+                              answer: answer,
+                            ),
+                          ),
+                        );
+                      } catch (e) {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text('エラー'),
+                              content: Text(e.toString()),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('閉じる'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    },
+                    child: const Text('recipeから探す'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('閉じる'),
+                  ),
+                ],
+              );
+            },
+          );
         },
+
         // 選択された材料を表示するボタン
         onSelectedTap: showSelectedIngredients,
         // 材料を追加するボタン
