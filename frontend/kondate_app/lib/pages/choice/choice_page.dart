@@ -4,6 +4,7 @@ import 'package:kondate_app/dialogs/delete_ingredient_confirmation_dialog.dart';
 import 'package:kondate_app/models/ingredient.dart';
 import 'package:kondate_app/pages/choice/add_ingredient_page.dart';
 import 'package:kondate_app/pages/choice/edit_ingredient_page.dart';
+import 'package:kondate_app/pages/result_ai_page.dart';
 import 'package:kondate_app/pages/result_page.dart';
 import 'package:kondate_app/providers/ingredient_provider.dart';
 import 'package:kondate_app/providers/selected_ingredients_provider.dart';
@@ -120,8 +121,41 @@ class ChoicePage extends ConsumerWidget {
               ),
               actions: [
                 TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
+                  onPressed: () async {
+                    try {
+                      print('Aiに聞くボタンが押されました');
+                      final answer =
+                          await postRecipeAiProposalFromApi(selectedIngredients);
+                      print('Aiに聞くボタンが押されました2');
+                      debugPrint('${answer}');
+                      debugPrint(answer.runtimeType.toString());
+                      
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ResultAiPage(
+                            answer: answer,
+                          ),
+                        ),
+                      );
+                    } catch (e) {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('エラー'),
+                            content: Text(e.toString()),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('閉じる'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
                   },
                   child: const Text('AIに聞く'),
                 ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kondate_app/models/recipe.dart';
-import 'package:kondate_app/pages/show_recipe.dart';
+import 'package:kondate_app/pages/show_recipe_page.dart';
 
 class ResultPage extends StatelessWidget {
   final List<Recipe> answer;

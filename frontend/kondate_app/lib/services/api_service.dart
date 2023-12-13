@@ -154,7 +154,7 @@ Future<List<Recipe>> postRecipeProposalFromApi(
 
     if (jsonData.isEmpty) {
       return [];
-    }else{
+    } else {
       recipeList = [];
       for (final item in jsonData) {
         recipe = Recipe.fromJson(item);
@@ -163,6 +163,27 @@ Future<List<Recipe>> postRecipeProposalFromApi(
       debugPrint('プロポーザル：${recipeList.toString()}');
       return recipeList;
     }
+  } else {
+    throw Exception('Failed to load ingredient');
+  }
+}
+
+Future<String> postRecipeAiProposalFromApi(
+    List<num> selectedIngredients) async {
+  final request = utf8.encode(json.encode(selectedIngredients));
+  final response = await http.post(
+      Uri.parse(
+        '$apiRoute/recipes/proposal/ai-proposal',
+      ),
+      body: request);
+
+  if (response.statusCode == 200) {
+    // jsonデータをパース
+    final jsonData =  response.bodyBytes; //json.decode(utf8.decode(response.bodyBytes));
+    debugPrint('レスポンス：${jsonData.runtimeType.toString()}');
+    debugPrint('レスポンス：${utf8.decode(jsonData).replaceAll(r'\n', '\n').toString()}');
+    final String answer =utf8.decode(jsonData).replaceAll(r'\n', '\n').toString();
+    return answer;
   } else {
     throw Exception('Failed to load ingredient');
   }
