@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kondate_app/models/ingredient.dart';
 import 'package:kondate_app/models/recipe.dart';
 import 'package:kondate_app/configs/constants.dart';
-import 'package:kondate_app/pages/menu_page.dart';
+import 'package:kondate_app/pages/main_page.dart';
 import 'package:kondate_app/providers/ingredient_provider.dart';
 import 'package:kondate_app/providers/recipe_provider.dart';
 import 'package:kondate_app/services/api_service.dart';
@@ -174,7 +174,7 @@ class AddRecipePage extends HookWidget {
                     );
                     Navigator.of(currentContext).push(
                       MaterialPageRoute(
-                        builder: (context) => const MenuPage(),
+                        builder: (context) => MainPage(),
                       ),
                     );
                   },

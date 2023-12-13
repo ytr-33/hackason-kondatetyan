@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kondate_app/pages/edit_recipe_page.dart';
 import 'package:kondate_app/pages/show_recipe.dart';
 
 class ResultPage extends StatelessWidget {

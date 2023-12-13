@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kondate_app/configs/constants.dart';
 import 'package:kondate_app/pages/choice_page.dart';
-import 'package:kondate_app/pages/menu_page.dart';
+import 'package:kondate_app/pages/recipe_page.dart';
 import 'package:kondate_app/providers/current_page_provider.dart';
 
 // メインのページ
@@ -25,7 +25,7 @@ class MainPage extends ConsumerWidget {
       const PageNavigationDestination(
         selectedIcon: Icon(Icons.restaurant_menu),
         icon: Icon(Icons.restaurant_menu_outlined),
-        label: 'Menu',
+        label: 'My Recipes',
       ),
       const PageNavigationDestination(
         selectedIcon: Icon(Icons.settings),
@@ -42,7 +42,7 @@ class MainPage extends ConsumerWidget {
       body: <Widget>[
         // 各ページのコンテナを表示
         const PageContainer(page: ChoicePage()),
-        const PageContainer(page: MenuPage()),
+        const PageContainer(page: RecipePage()),
         const PageContainer(page: Text('setting')),
       ][currentPageIndex],
       bottomNavigationBar: NavigationBar(

@@ -9,8 +9,8 @@ import 'package:kondate_app/providers/recipe_provider.dart';
 import 'package:kondate_app/services/api_service.dart';
 import 'package:kondate_app/widgets/recipe_list_tile.dart';
 
-class MenuPage extends ConsumerWidget {
-  const MenuPage({super.key});
+class RecipePage extends ConsumerWidget {
+  const RecipePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
