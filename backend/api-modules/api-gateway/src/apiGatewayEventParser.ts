@@ -21,6 +21,7 @@ export class ApiGatewayEventPaser {
             return null
         }
     }
+    
     public getBody():string | null {
         return this.event.body
     }

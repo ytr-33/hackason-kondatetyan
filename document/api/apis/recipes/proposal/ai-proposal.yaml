@@ -1,0 +1,47 @@
+post:
+  operationId: createAiRecipeProposal
+  tags:
+   - recipes
+  summary: AIでレシピ提案を作成
+  description: |- 
+    入力値から作成できるレシピをAIを使用して提案する
+  requestBody:
+    description: 使用する食材IDリスト
+    required: true
+    content:  
+      application/json:
+        schema:
+          type: array
+          items:
+            $ref: '../../../components/dynamoDB/tbl_ingredients.yaml#/Id'
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: string
+            example: |-
+              ソテー人参とホタテ
+                材料:
+                - 人参 2本
+                - ホタテ 8枚
+                - オリーブオイル 大さじ2
+                - 塩 少々
+                - 黒コショウ 少々
+                - レモン 適量（オプション）
+
+                調理手順:
+                1. 人参を洗って皮をむき、半月切りにする。
+                2. ホタテを洗い、余分な水分をキッチンペーパーで拭き取る。
+                3. フライパンを中火で熱し、オリーブオイルを加える。
+                4. 人参をフライパンに加え、軽く塩をふりながら炒める。人参が少ししんなりするまで炒める。
+                5. ホタテをフライパンに加え、片面を2〜3分程度焼く。ホタテに焼き目がつくまで焼くことで香りと旨味が引き出されます。
+                6. ホタテをひっくり返し、もう一方の面も2〜3分程度焼く。
+                7. フライパンから取り出し、塩と黒コショウで味を調える。
+                8. 適量のレモンを搾って、ソテー人参とホタテにかける（オプション）。
+                9. 盛り付けて完成。
+                ホタテの旨味と人参の甘みが絶妙に交じり合い、彩りも鮮やかな一品が完成します。お好みで付け合わせにサラダやご飯を添えても美味しくいただけます。
+                
+    default:
+       $ref: '../../../components/common/response.yaml#/Default'

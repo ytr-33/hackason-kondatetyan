@@ -6,14 +6,14 @@ post:
   description: |- 
     入力値から提案されるレシピの詳細リストを返却
   requestBody:
-    description: 使用する食材リスト
+    description: 使用する食材IDリスト
     required: true
     content:  
       application/json:
         schema:
           type: array
           items:
-            $ref: '../../components/dynamoDB/tbl_ingredients.yaml#/Name'
+            $ref: '../../components/dynamoDB/tbl_ingredients.yaml#/Id'
   responses:
     "200":
       description: Success
@@ -30,6 +30,8 @@ post:
                   $ref: '../../components/dynamoDB/tbl_recipes.yaml#/Id'
                 name:
                   $ref: '../../components/dynamoDB/tbl_recipes.yaml#/Name'
+                category:
+                  $ref: '../../components/dynamoDB/tbl_recipes.yaml#/Category'
                 ingredients:
                   $ref: '../../components/dynamoDB/tbl_recipes.yaml#/Ingredients'
                 Procedure:

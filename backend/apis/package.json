@@ -12,7 +12,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^29.5.10",
-    "@types/node": "^18.17.17",
+    "@types/node": "^18.19.3",
     "bootprint": "^4.0.4",
     "bootprint-openapi": "^4.0.4",
     "eslint-plugin-jest": "^27.4.0",
@@ -24,9 +24,11 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@api-modules/util": "file:../api-modules/util/src",
-    "@api-modules/dynamo-db": "file:../api-modules/dynamo-db/src",
     "@api-modules/api-gateway": "file:../api-modules/api-gateway/src",
-    "@aws-sdk/client-dynamodb": "^3.414.0"
+    "@api-modules/dynamo-db": "file:../api-modules/dynamo-db/src",
+    "@api-modules/test-util": "file:../api-modules/test-util/src",
+    "@api-modules/util": "file:../api-modules/util/src",
+    "@aws-sdk/client-dynamodb": "^3.414.0",
+    "openai": "^4.20.1"
   }
 }

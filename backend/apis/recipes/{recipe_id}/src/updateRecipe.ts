@@ -1,4 +1,4 @@
-import { IngredientsModel } from "@api-modules/dynamo-db/models/ingredientsModel";
+import { RecipesModel } from "@api-modules/dynamo-db/models/recipesModel";
 import {ApiGatewayEventPaser } from "@api-modules/api-gateway";
 
 export const handler = async (event: any) => {
@@ -6,14 +6,14 @@ export const handler = async (event: any) => {
 
   const eventParser = new ApiGatewayEventPaser(event)
 
-  const ingredientId = Number(eventParser.getPathParamter("ingredient_id"))
+  const id = Number(eventParser.getPathParamter("recipe_id"))
   const body = eventParser.getParsedBody() as {[key:string]:string}
 
   // TODO：余裕があればバリデーション追加
 
-  const model = new IngredientsModel();
+  const model = new RecipesModel();
 
-  const items = await model.UpdateItem(ingredientId,body)
+  const items = await model.UpdateItem(id,body)
 
   // 成功時のレスポンスを返す
   return {
