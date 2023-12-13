@@ -174,7 +174,7 @@ class AddRecipePage extends HookWidget {
                     );
                     Navigator.of(currentContext).push(
                       MaterialPageRoute(
-                        builder: (context) => MainPage(),
+                        builder: (context) => const MainPage(),
                       ),
                     );
                   },

@@ -6,11 +6,11 @@ part 'recipe_provider.g.dart';
 // スプラッシュ画面で準備したデータを残しておくために keepAlive する
 @Riverpod(keepAlive: true)
 class RecipeNotifier extends _$RecipeNotifier {
-  Map<num, Recipe?> recipeMap = {};
+  final Map<num, Recipe?> _recipeMap = {};
 
   @override
   Map<num, Recipe?> build() {
-    return recipeMap;
+    return _recipeMap;
   }
 
   ////////// ApiGatewayの場合 //////////

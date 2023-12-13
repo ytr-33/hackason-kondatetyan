@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kondate_app/dialogs/delete_ingredient_confirmation_dialog.dart';
 import 'package:kondate_app/models/ingredient.dart';
-import 'package:kondate_app/pages/add_ingredient_page.dart';
-import 'package:kondate_app/pages/edit_ingredient_page.dart';
+import 'package:kondate_app/pages/choice/add_ingredient_page.dart';
+import 'package:kondate_app/pages/choice/edit_ingredient_page.dart';
 import 'package:kondate_app/pages/result_page.dart';
 import 'package:kondate_app/providers/ingredient_provider.dart';
 import 'package:kondate_app/providers/selected_ingredients_provider.dart';
@@ -38,12 +38,14 @@ class ChoicePage extends ConsumerWidget {
       final notifier = ref.read(selectedIngredientsNotifierProvider.notifier);
       notifier.clearState();
     }
-
+    
+    /*参照されていない？
     void removeSelection(num id) {
       deleteIngredientToApi(id);
       final notifier = ref.read(selectedIngredientsNotifierProvider.notifier);
       notifier.removeState(id);
     }
+    */
 
     // 選択された材料を表示する関数
     void showSelectedIngredients() {
@@ -59,10 +61,16 @@ class ChoicePage extends ConsumerWidget {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                for (num id in selectedIngredients)
-                  Text(
-                    ingredients[id]?.name ?? '',
-                  ),
+                if (selectedIngredients.isEmpty)
+                  const Text(
+                    '材料が選択されていません',
+                    style: TextStyle(color: Colors.red),
+                  )
+                else
+                  for (num id in selectedIngredients)
+                    Text(
+                      ingredients[id]?.name ?? '',
+                    ),
               ],
             ),
             actions: [
@@ -74,6 +82,95 @@ class ChoicePage extends ConsumerWidget {
               ),
             ],
           );
+        },
+      );
+    }
+
+    void getRecipeShowDialog() {
+      showDialog(
+        context: context,
+        builder: (context) {
+          if (selectedIngredients.isEmpty) {
+            return AlertDialog(
+              title: const Text('エラー'),
+              content: const Text(
+                '材料を選択してください',
+                style: TextStyle(color: Colors.red),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('閉じる'),
+                ),
+              ],
+            );
+          } else {
+            return AlertDialog(
+              title: const Text('選択された材料'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (num id in selectedIngredients)
+                    Text(
+                      ingredients[id]?.name ?? '',
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('AIに聞く'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    try {
+                      final answer =
+                          await postRecipeProposalFromApi(selectedIngredients);
+                      debugPrint(answer[0].ingredients.toString());
+                      debugPrint(answer[0].ingredients.runtimeType.toString());
+                      
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ResultPage(
+                            answer: answer,
+                          ),
+                        ),
+                      );
+                    } catch (e) {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('エラー'),
+                            content: Text(e.toString()),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('閉じる'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
+                  child: const Text('My recipeから探す'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('閉じる'),
+                ),
+              ],
+            );
+          }
         },
       );
     }
@@ -142,73 +239,7 @@ class ChoicePage extends ConsumerWidget {
       // カスタムウィジェットとして作成したSpeedDialを利用
       floatingActionButton: CustomSpeedDial(
         // メニュー取得ボタン
-        onGetMenuTap: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text('選択された材料'),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    for (num id in selectedIngredients)
-                      Text(
-                        ingredients[id]?.name ?? '',
-                      ),
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('AIに聞く'),
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      try {
-                        final answer = await postRecipeProposalFromApi(
-                            selectedIngredients);
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => ResultPage(
-                              answer: answer,
-                            ),
-                          ),
-                        );
-                      } catch (e) {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text('エラー'),
-                              content: Text(e.toString()),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('閉じる'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }
-                    },
-                    child: const Text('recipeから探す'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('閉じる'),
-                  ),
-                ],
-              );
-            },
-          );
-        },
+        onGetMenuTap: getRecipeShowDialog,
 
         // 選択された材料を表示するボタン
         onSelectedTap: showSelectedIngredients,

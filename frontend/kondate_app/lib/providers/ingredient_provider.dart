@@ -6,11 +6,11 @@ part 'ingredient_provider.g.dart';
 // スプラッシュ画面で準備したデータを残しておくために keepAlive する
 @Riverpod(keepAlive: true)
 class IngredientNotifier extends _$IngredientNotifier {
-  Map<num, Ingredient?> ingredientMap = {};
+  final Map<num, Ingredient?> _ingredientMap = {};
 
   @override
   Map<num, Ingredient?> build() {
-    return ingredientMap;
+    return _ingredientMap;
   }
 
   ////////// ApiGatewayの場合 //////////

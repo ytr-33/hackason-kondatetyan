@@ -137,8 +137,10 @@ Future<void> deleteRecipeToApi(num id) async {
   }
 }
 
-Future<List<dynamic>> postRecipeProposalFromApi(
+Future<List<Recipe>> postRecipeProposalFromApi(
     List<num> selectedIngredients) async {
+  Recipe recipe;
+  List<Recipe> recipeList;
   final request = utf8.encode(json.encode(selectedIngredients));
   final response = await http.post(
       Uri.parse(
@@ -148,9 +150,19 @@ Future<List<dynamic>> postRecipeProposalFromApi(
 
   if (response.statusCode == 200) {
     // jsonデータをパース
-    final answer = json.decode(utf8.decode(response.bodyBytes));
+    final List jsonData = json.decode(utf8.decode(response.bodyBytes));
 
-    return answer;
+    if (jsonData.isEmpty) {
+      return [];
+    }else{
+      recipeList = [];
+      for (final item in jsonData) {
+        recipe = Recipe.fromJson(item);
+        recipeList.add(recipe);
+      }
+      debugPrint('プロポーザル：${recipeList.toString()}');
+      return recipeList;
+    }
   } else {
     throw Exception('Failed to load ingredient');
   }

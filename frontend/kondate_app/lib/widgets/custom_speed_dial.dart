@@ -38,7 +38,7 @@ class CustomSpeedDial extends StatelessWidget {
         ),
         SpeedDialChild(
           child: const Icon(Icons.clear),
-          label: 'Clear Check',
+          label: 'Clear selected',
           onTap: onClearCheckTap,
         ),
       ],

@@ -2,13 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kondate_app/configs/constants.dart';
-import 'package:kondate_app/pages/choice_page.dart';
-import 'package:kondate_app/pages/recipe_page.dart';
+import 'package:kondate_app/pages/choice/choice_page.dart';
+import 'package:kondate_app/pages/recipe/recipe_page.dart';
 import 'package:kondate_app/providers/current_page_provider.dart';
 
 // メインのページ
 class MainPage extends ConsumerWidget {
-  MainPage({super.key});
+  const MainPage({super.key});
   
   @override
   Widget build(BuildContext context, WidgetRef ref) {

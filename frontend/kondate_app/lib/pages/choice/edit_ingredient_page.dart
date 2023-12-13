@@ -83,7 +83,7 @@ class EditIngredientPage extends HookWidget {
                     );
                     Navigator.of(currentContext).push(
                       MaterialPageRoute(
-                        builder: (currentContext) => MainPage(),
+                        builder: (currentContext) => const MainPage(),
                       ),
                     );
                   },
