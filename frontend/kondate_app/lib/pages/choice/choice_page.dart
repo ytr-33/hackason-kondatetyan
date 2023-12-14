@@ -6,6 +6,7 @@ import 'package:kondate_app/pages/choice/add_ingredient_page.dart';
 import 'package:kondate_app/pages/choice/edit_ingredient_page.dart';
 import 'package:kondate_app/pages/result_ai_page.dart';
 import 'package:kondate_app/pages/result_page.dart';
+import 'package:kondate_app/providers/is_loading_provider.dart';
 import 'package:kondate_app/providers/ingredient_provider.dart';
 import 'package:kondate_app/providers/selected_ingredients_provider.dart';
 import 'package:kondate_app/services/api_service.dart';
@@ -21,6 +22,7 @@ class ChoicePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ingredients = ref.watch(ingredientNotifierProvider);
     final selectedIngredients = ref.watch(selectedIngredientsNotifierProvider);
+    final isLoading = ref.watch(isLoadingNotifierProvider);
 
     void showDeleteConfirmationDialog(Ingredient ingredient) {
       // ダイアログを表示し、削除が確定されたら非同期で削除
@@ -39,14 +41,6 @@ class ChoicePage extends ConsumerWidget {
       final notifier = ref.read(selectedIngredientsNotifierProvider.notifier);
       notifier.clearState();
     }
-    
-    /*参照されていない？
-    void removeSelection(num id) {
-      deleteIngredientToApi(id);
-      final notifier = ref.read(selectedIngredientsNotifierProvider.notifier);
-      notifier.removeState(id);
-    }
-    */
 
     // 選択された材料を表示する関数
     void showSelectedIngredients() {
@@ -123,9 +117,9 @@ class ChoicePage extends ConsumerWidget {
                 TextButton(
                   onPressed: () async {
                     try {
-                      final answer =
-                          await postRecipeAiProposalFromApi(selectedIngredients);
-                      
+                      final answer = await postRecipeAiProposalFromApi(
+                          selectedIngredients);
+
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => ResultAiPage(
@@ -158,11 +152,11 @@ class ChoicePage extends ConsumerWidget {
                 TextButton(
                   onPressed: () async {
                     try {
+                      debugPrint('前');
                       final answer =
                           await postRecipeProposalFromApi(selectedIngredients);
-                      debugPrint(answer[0].ingredients.toString());
-                      debugPrint(answer[0].ingredients.runtimeType.toString());
-                      
+                      debugPrint('後');
+
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => ResultPage(
