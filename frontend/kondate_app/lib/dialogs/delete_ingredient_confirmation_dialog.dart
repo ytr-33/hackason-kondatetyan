@@ -30,7 +30,7 @@ class DeleteIngredientConfirmationDialog {
 
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => MainPage(),
+                    builder: (context) => const MainPage(),
                   ),
                 );
               },

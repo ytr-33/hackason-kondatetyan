@@ -110,7 +110,7 @@ Future<void> putRecipeToApi(Recipe recipe) async {
   RecipeExceptId recipeExceptId = RecipeExceptId(
     name: recipe.name,
     category: recipe.category,
-    ingredients: recipe.ingredients.toString(),
+    ingredients: json.encode(recipe.ingredients),
     procedure: recipe.procedure,
   );
 
@@ -141,6 +141,7 @@ Future<List<Recipe>> postRecipeProposalFromApi(
     List<num> selectedIngredients) async {
   Recipe recipe;
   List<Recipe> recipeList;
+  debugPrint('ここまできてるよ');
   final request = utf8.encode(json.encode(selectedIngredients));
   final response = await http.post(
       Uri.parse(
@@ -160,11 +161,10 @@ Future<List<Recipe>> postRecipeProposalFromApi(
         recipe = Recipe.fromJson(item);
         recipeList.add(recipe);
       }
-      debugPrint('プロポーザル：${recipeList.toString()}');
       return recipeList;
     }
   } else {
-    throw Exception('Failed to load ingredient');
+    throw Exception('Failed to find recipe');
   }
 }
 
@@ -179,12 +179,17 @@ Future<String> postRecipeAiProposalFromApi(
 
   if (response.statusCode == 200) {
     // jsonデータをパース
-    final jsonData =  response.bodyBytes; //json.decode(utf8.decode(response.bodyBytes));
+    final jsonData =
+        response.bodyBytes; //json.decode(utf8.decode(response.bodyBytes));
     debugPrint('レスポンス：${jsonData.runtimeType.toString()}');
-    debugPrint('レスポンス：${utf8.decode(jsonData).replaceAll(r'\n', '\n').toString()}');
-    final String answer =utf8.decode(jsonData).replaceAll(r'\n', '\n').toString();
+    debugPrint(
+        'レスポンス：${utf8.decode(jsonData).replaceAll(r'\n', '\n').toString()}');
+    final String answer =
+        utf8.decode(jsonData).replaceAll(r'\n', '\n').toString();
     return answer;
+  } else if (response.statusCode == 504) {
+    return '時間内にレシピが見つかりませんでした。';
   } else {
-    throw Exception('Failed to load ingredient');
+    throw Exception('Failed to find recipe');
   }
 }

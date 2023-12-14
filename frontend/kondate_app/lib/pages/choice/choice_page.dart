@@ -123,12 +123,8 @@ class ChoicePage extends ConsumerWidget {
                 TextButton(
                   onPressed: () async {
                     try {
-                      print('Aiに聞くボタンが押されました');
                       final answer =
                           await postRecipeAiProposalFromApi(selectedIngredients);
-                      print('Aiに聞くボタンが押されました2');
-                      debugPrint('${answer}');
-                      debugPrint(answer.runtimeType.toString());
                       
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -194,7 +190,7 @@ class ChoicePage extends ConsumerWidget {
                       );
                     }
                   },
-                  child: const Text('My recipeから探す'),
+                  child: const Text('My recipesから探す'),
                 ),
                 TextButton(
                   onPressed: () {

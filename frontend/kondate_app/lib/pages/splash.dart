@@ -65,7 +65,7 @@ class _DataInitView extends HookWidget {
 
     // メイン画面を準備
     final route = MaterialPageRoute(builder: (context) {
-      return MainPage();
+      return const MainPage();
     });
 
     // メイン画面へ移動
