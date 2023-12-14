@@ -24,11 +24,9 @@ class SplashPage extends ConsumerWidget {
               recipeNotifier: recipeNotifier,
               ingredientNotifier: ingredientNotifier),
           // 腹側
-          const Center(
+          Center(
             // 適当なロゴとか
-            child: FlutterLogo(
-              size: 100,
-            ),
+            child: Image.asset('assets/images/logo.png',width: 200,height: 200,),
           ),
         ],
       ),
@@ -61,7 +59,6 @@ class _DataInitView extends HookWidget {
     await recipeNotifier.fetchInitRecipe().catchError((err) {
       debugPrint(err);
     });
-
 
     // メイン画面を準備
     final route = MaterialPageRoute(builder: (context) {

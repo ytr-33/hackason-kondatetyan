@@ -1,26 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'recipe_provider.dart';
+part of 'is_loading_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$recipeNotifierHash() => r'8331fe1ec9538047ce69a213c942d3fc467c6862';
+String _$isLoadingNotifierHash() => r'35813ff62c9645396c558c7b17d38d26d8435d28';
 
-/// See also [RecipeNotifier].
-@ProviderFor(RecipeNotifier)
-final recipeNotifierProvider =
-    NotifierProvider<RecipeNotifier, Map<num, Recipe?>>.internal(
-  RecipeNotifier.new,
-  name: r'recipeNotifierProvider',
+/// See also [IsLoadingNotifier].
+@ProviderFor(IsLoadingNotifier)
+final isLoadingNotifierProvider =
+    NotifierProvider<IsLoadingNotifier, bool>.internal(
+  IsLoadingNotifier.new,
+  name: r'isLoadingNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$recipeNotifierHash,
+      : _$isLoadingNotifierHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$RecipeNotifier = Notifier<Map<num, Recipe?>>;
+typedef _$IsLoadingNotifier = Notifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
