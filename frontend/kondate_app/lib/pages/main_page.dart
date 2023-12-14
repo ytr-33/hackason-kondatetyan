@@ -1,19 +1,19 @@
 // main_page.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kondate_app/configs/constants.dart';
-import 'package:kondate_app/pages/choice_page.dart';
-import 'package:kondate_app/pages/menu_page.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:kondate_app/pages/choice/choice_page.dart';
+import 'package:kondate_app/pages/recipe/recipe_page.dart';
+import 'package:kondate_app/providers/current_page_provider.dart';
 
 // メインのページ
-class MainPage extends HookWidget {
-  const MainPage({Key? key}) : super(key: key);
-
+class MainPage extends ConsumerWidget {
+  const MainPage({super.key});
+  
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // 現在のページのインデックスと編集モードの状態を取得
-    final currentPageIndex = useState(0);
-    final editMode = useState(false);
+    final currentPageIndex = ref.watch(currentPageNotifierProvider);
 
     // ページのナビゲーションアイテム
     final List<PageNavigationDestination> destinations = [
@@ -25,7 +25,7 @@ class MainPage extends HookWidget {
       const PageNavigationDestination(
         selectedIcon: Icon(Icons.restaurant_menu),
         icon: Icon(Icons.restaurant_menu_outlined),
-        label: 'Menu',
+        label: 'My Recipes',
       ),
       const PageNavigationDestination(
         selectedIcon: Icon(Icons.settings),
@@ -33,39 +33,24 @@ class MainPage extends HookWidget {
         label: 'Setting',
       ),
     ];
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: Text(pageTitles[currentPageIndex.value]),
-        actions: [
-          // 編集モードのスイッチ
-          Switch(
-            value: editMode.value,
-            activeColor: Colors.orange,
-            onChanged: (value) {
-              if (value) {
-                editMode.value = true;
-              } else {
-                editMode.value = false;
-              }
-              debugPrint('editMode: $value ${editMode.value}');
-            },
-          ),
-        ],
+        title: Text(pageTitles[currentPageIndex]),
       ),
       body: <Widget>[
         // 各ページのコンテナを表示
         const PageContainer(page: ChoicePage()),
-        const PageContainer(page: MenuPage()),
+        const PageContainer(page: RecipePage()),
         const PageContainer(page: Text('setting')),
-      ][currentPageIndex.value],
+      ][currentPageIndex],
       bottomNavigationBar: NavigationBar(
         // ナビゲーションアイテムの一覧
-        selectedIndex: currentPageIndex.value,
+        selectedIndex: currentPageIndex,
         onDestinationSelected: (index) {
-          currentPageIndex.value = index;
+          final notifier = ref.read(currentPageNotifierProvider.notifier);
+          notifier.changePage(index);
         },
         destinations: destinations.map((destination) {
           return NavigationDestination(

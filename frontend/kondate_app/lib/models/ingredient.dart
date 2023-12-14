@@ -1,5 +1,5 @@
 class Ingredient {
-  int id;
+  num id;
   String name;
   String category;
   String unit;
@@ -11,12 +11,32 @@ class Ingredient {
     required this.unit,
   });
 
-  factory Ingredient.fromJson(Map<int, dynamic> json) {
+  factory Ingredient.fromJson(Map<String, dynamic> json) {
     return Ingredient(
       id: json['id'],
       name: json['name'],
-      category: json['types'][0]['type']['name'],
-      unit: json['name'],
+      category: json['category'],
+      unit: json['unit'],
     );
+  }
+}
+
+class IngredientExceptId{
+  String name;
+  String category;
+  String unit;
+
+  IngredientExceptId({
+    required this.name,
+    required this.category,
+    required this.unit,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'category': category,
+      'unit': unit,
+    };
   }
 }

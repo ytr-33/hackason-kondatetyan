@@ -1,4 +1,4 @@
-import 'package:kondate_app/models/ingredient.dart';
+/*import 'package:kondate_app/models/ingredient.dart';
 
 List<Ingredient> ingredients = [
   Ingredient(id: 1, name: 'ベーコン', category: '肉類', unit: 'g'),
@@ -20,3 +20,4 @@ List<Ingredient> ingredients = [
   Ingredient(id: 17, name: '米', category: 'その他', unit: 'g'),
   Ingredient(id: 18, name: 'パスタ', category: 'その他', unit: 'g'),
 ];
+*/
