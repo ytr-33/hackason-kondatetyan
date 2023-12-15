@@ -1,10 +1,12 @@
 import { Stack, StackProps, aws_apigateway } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { IStackConst } from "./environment";
+import { LambdaConfig,createNodejsFunction } from "./utils/lambdaCreator";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 /**
  * cdk設定用インターフェースを拡張
  */
@@ -19,28 +21,26 @@ export class CdkStack extends Stack {
     /** ----------------------------------------
      * DynamoDBテーブル　
      ---------------------------------------- */
-    const ingredientTable = new dynamodb.Table(this, 'IngredientTable', {
-      partitionKey: { name: 'id', type: dynamodb.AttributeType.NUMBER },
-      sortKey: { name: 'name', type: dynamodb.AttributeType.STRING },
-    });
+    // const ingredientTable = new dynamodb.Table(this, 'IngredientTable', {
+    //   partitionKey: { name: 'id', type: dynamodb.AttributeType.NUMBER },
+    //   sortKey: { name: 'name', type: dynamodb.AttributeType.STRING },
+    // });
 
-    const recipeTable = new dynamodb.Table(this, 'RecipeTable', {
-      partitionKey: { name: 'id', type: dynamodb.AttributeType.NUMBER },
-      sortKey: { name: 'name', type: dynamodb.AttributeType.STRING },
-    });
+    // const recipeTable = new dynamodb.Table(this, 'RecipeTable', {
+    //   partitionKey: { name: 'id', type: dynamodb.AttributeType.NUMBER },
+    //   sortKey: { name: 'name', type: dynamodb.AttributeType.STRING },
+    // });
 
     /** ----------------------------------------
      * Lambda共通環境変数
      ---------------------------------------- */
     const lambdaEnvironmtntCommon = {
       REGION: props!.constant.awsRegion,
+      // INGREDIENTS_TABLE_NAME : ingredientTable.tableName, // 最終的にはこちらに変更
+      // RECIPES_TABLE_NAME : ingredientTable.tableName, // 最終的にはこちらに変更
       INGREDIENTS_TABLE_NAME : "tbl_ingredients",
       RECIPES_TABLE_NAME : "tbl_recipes",
     };
-    /** ----------------------------------------
-     * Lambda個別設定用環境変数
-     ---------------------------------------- */
-    const LOCAL_ENV = {};
 
     /** ----------------------------------------
      * Lambda設定＋APIGateway設定
@@ -103,10 +103,10 @@ export class CdkStack extends Stack {
         },
       },
       {
-        name: "getRecipeProposal",
-        filePath: "../apis/recipes/proposal/src/getRecipeProposal.ts",
+        name: "createRecipeProposal",
+        filePath: "../apis/recipes/proposal/src/createRecipeProposal.ts",
         environment: {
-          
+          RECIPE_PROPOSAL_PERCENTAGE_THRESHOLD:"20",
           ...lambdaEnvironmtntCommon,
         },
       },
@@ -130,193 +130,88 @@ export class CdkStack extends Stack {
       ],
     });
 
-    lambdaDynamoRole.addToPolicy(new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['dynamodb:*'],
-      resources: [ingredientTable.tableArn, recipeTable.tableArn],
-    }));
+    // TODO:このあたりはDynamoの修正が終わり次第消す
+    lambdaDynamoRole.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName("AdministratorAccess")
+    );
+    lambdaDynamoRole.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName("AWSLambdaExecute")
+    );
+    lambdaDynamoRole.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName("SecretsManagerReadWrite")
+    );
+    lambdaDynamoRole.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess")
+    );
+    lambdaDynamoRole.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMFullAccess")
+    );
+    lambdaDynamoRole.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName(
+        "service-role/AWSLambdaVPCAccessExecutionRole"
+      )
+    );
+
+    
+    // lambdaDynamoRole.addToPolicy(new iam.PolicyStatement({
+    //   effect: iam.Effect.ALLOW,
+    //   actions: ['dynamodb:*'],
+    //   resources: [ingredientTable.tableArn, recipeTable.tableArn],
+    // }));
 
     /** ----------------------------------------
      * Lambda設定
      ---------------------------------------- */
-    const getIngredientsLambda = new lambda.Function(this, 'GetIngredientsLambda', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      code: lambda.Code.fromAsset('../../apis/ingredients/getIngredients.ts'),
-      handler: 'index.handler',
-      role: lambdaDynamoRole,
-      environment: {
-        TABLE_NAME: ingredientTable.tableName,
-      },
-    });
-
-    const postIngredientsLambda = new lambda.Function(this, 'PostIngredientsLambda', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      code: lambda.Code.fromAsset('../../apis/recipes/postIngredients.ts'),
-      handler: 'index.handler',
-      role: lambdaDynamoRole,
-      environment: {
-        TABLE_NAME: ingredientTable.tableName,
-      },
-    });
-
-    const putIngredientsLambda = new lambda.Function(this, 'PutIngredientsLambda', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      code: lambda.Code.fromAsset('../../apis/ingredients/putIngredients.ts'),
-      handler: 'index.handler',
-      role: lambdaDynamoRole,
-      environment: {
-        TABLE_NAME: ingredientTable.tableName,
-      },
-    });
-
-    const deleteIngredientsLambda = new lambda.Function(this, 'deleteIngredients', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      code: lambda.Code.fromAsset('../../apis/ingredients/deleteRecipes.ts'),
-      handler: 'index.handler',
-      role: lambdaDynamoRole,
-      environment: {
-        TABLE_NAME: ingredientTable.tableName,
-      },
-    });
-    
-    const getRecipesLambda = new lambda.Function(this, 'GetRecipesLambda', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      code: lambda.Code.fromAsset('../../apis/recipes/getRecipes.ts'),
-      handler: 'index.handler',
-      role: lambdaDynamoRole,
-      environment: {
-        TABLE_NAME: recipeTable.tableName,
-      },
-    });
-
-    const postRecipesLambda = new lambda.Function(this, 'PostRecipesLambda', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      code: lambda.Code.fromAsset('../../apis/recipes/postRecipes.ts'),
-      handler: 'index.handler',
-      role: lambdaDynamoRole,
-      environment: {
-        TABLE_NAME: recipeTable.tableName,
-      },
-    });
-
-    const putRecipesLambda = new lambda.Function(this, 'PutRecipesLambda', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      code: lambda.Code.fromAsset('../../apis/ingredients/putRecipes.ts'),
-      handler: 'index.handler',
-      role: lambdaDynamoRole,
-      environment: {
-        TABLE_NAME: recipeTable.tableName,
-      },
-    });
-
-    const deleteRecipesLambda = new lambda.Function(this, 'deleteRecipesLambda', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      code: lambda.Code.fromAsset('../../apis/ingredients/deleteRecipes.ts'),
-      handler: 'index.handler',
-      role: lambdaDynamoRole,
-      environment: {
-        TABLE_NAME: recipeTable.tableName,
-      },
-    });
-
-    const getRecipeProposalLambda = new lambda.Function(this, 'GetRecipeProposalLambda', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      code: lambda.Code.fromAsset('../../apis/ingredients/getRecipeProposals.ts'),
-      handler: 'index.handler',
-      role: lambdaDynamoRole,
-      environment: {
-        TABLE_NAME: recipeTable.tableName,
-      },
-    });
-
-    const initializeLambda = new lambda.Function(this, 'InitializeLambda', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      code: lambda.Code.fromAsset('../../apis/initialize.ts'),
-      handler: 'index.handler',
-      role: lambdaDynamoRole,
-      environment: {
-        RECIPE_TABLE_NAME: recipeTable.tableName,
-        INGREDIENT_TABLE_NAME: ingredientTable.tableName
-      },
-    });
+    type lambdaFunctions = {
+      [prop: string]: NodejsFunction;
+    };
+    let lambdaFn: lambdaFunctions = {};
+     for (const curLambdaConfig of lambdaConfig) {
+      lambdaFn[curLambdaConfig.name] = createNodejsFunction(
+        this,
+        curLambdaConfig,
+        lambdaDynamoRole
+      );
+    }
 
     /** ----------------------------------------
      * APIGateway作成
      ---------------------------------------- */
-    const api = new apigateway.RestApi(this, 'RecipeApi', {
-      restApiName: 'RecipeService',
-    });
+
+     const api = new aws_apigateway.RestApi(
+      this,
+      props!.constant.apigateway.name,
+      {
+        restApiName: props!.constant.apigateway.name,
+        deployOptions: {
+          dataTraceEnabled: true,
+          metricsEnabled: true,
+        },
+      }
+    );
 
     const ingredients = api.root.addResource('ingredients')
-    ingredients.addMethod('GET', new apigateway.LambdaIntegration(getIngredientsLambda))
-    ingredients.addMethod('POST', new apigateway.LambdaIntegration(postIngredientsLambda))
-    ingredients.addMethod('PUT', new apigateway.LambdaIntegration(putIngredientsLambda))
-    ingredients.addMethod('DELETE', new apigateway.LambdaIntegration(deleteIngredientsLambda))
+    ingredients.addMethod('GET', new apigateway.LambdaIntegration(lambdaFn.getIngredientList))
+    ingredients.addMethod('POST', new apigateway.LambdaIntegration(lambdaFn.createIngredient))
+
+    const ingredient = ingredients.addResource('{ingredient_id}')
+    ingredient.addMethod('PUT', new apigateway.LambdaIntegration(lambdaFn.updateIngredient))
+    ingredient.addMethod('DELETE', new apigateway.LambdaIntegration(lambdaFn.deleteIngredient))
 
 
     const recipes = api.root.addResource('recipes');
-    recipes.addMethod('GET', new apigateway.LambdaIntegration(getRecipesLambda));
-    recipes.addMethod('POST', new apigateway.LambdaIntegration(postRecipesLambda));
+    recipes.addMethod('GET', new apigateway.LambdaIntegration(lambdaFn.getRecipeList));
+    recipes.addMethod('POST', new apigateway.LambdaIntegration(lambdaFn.createRecipe));
 
     const recipe = recipes.addResource('{recipe_id}');
-    recipe.addMethod('PUT', new apigateway.LambdaIntegration(putRecipesLambda));
-    recipe.addMethod('DELETE', new apigateway.LambdaIntegration(deleteRecipesLambda));
+    recipe.addMethod('PUT', new apigateway.LambdaIntegration(lambdaFn.updateRecipe));
+    recipe.addMethod('DELETE', new apigateway.LambdaIntegration(lambdaFn.deleteRecipe));
 
-    recipes.addResource('proposal').addMethod('GET', new apigateway.LambdaIntegration(getRecipeProposalLambda));
+    const recipeProposal = recipes.addResource('proposal');
+    recipeProposal.addMethod('POST', new apigateway.LambdaIntegration(lambdaFn.createRecipeProposal));
 
-    api.root.addResource('initialize').addMethod('GET', new apigateway.LambdaIntegration(initializeLambda));
-  
-    let curLambdaConfig:any ;
-    const resourcePathIngredients = apiRootPath.addResource("ingredients");
+    const aiRecipeProposal = recipeProposal.addResource('ai-proposal')
+    aiRecipeProposal.addMethod('POST', new apigateway.LambdaIntegration(lambdaFn.createAiRecipeProposal));
 
-
-    // GET
-    curLambdaConfig = lambdaConfig[0]
-    resourcePathIngredients.addMethod("GET",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name])
-      );
-    //POST
-    curLambdaConfig = lambdaConfig[1]
-    resourcePathIngredients.addMethod("POST", new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name])
-      );
-
-    const resourcePathIngredient = resourcePathIngredients.addResource("{ingredient_id}");
-    // PUT
-    curLambdaConfig = lambdaConfig[2]
-    resourcePathIngredient.addMethod("PUT",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
-    // DELETE
-    curLambdaConfig = lambdaConfig[3]
-    resourcePathIngredient.addMethod("DELETE",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
-
-   const resourcePathRecipes = apiRootPath.addResource("recipes");
-   
-   // GET
-   curLambdaConfig = lambdaConfig[4]
-   resourcePathRecipes.addMethod("GET",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
-   //POST
-   curLambdaConfig = lambdaConfig[5]
-   resourcePathRecipes.addMethod("POST",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
-
-   const resourcePathRecipe = resourcePathRecipes.addResource("{recipe_id}");
-   // PUT
-   curLambdaConfig = lambdaConfig[6]
-   resourcePathRecipe.addMethod("PUT",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
-   // DELETE
-   curLambdaConfig = lambdaConfig[7]
-   resourcePathRecipe.addMethod("DELETE", new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
-
-
-   
-   const resourcePathRecipeProposal = resourcePathRecipes.addResource("proposal");
-   // GET
-   curLambdaConfig = lambdaConfig[8]
-   resourcePathRecipeProposal.addMethod("POST",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
-  
-      
-   const resourcePathAiRecipeProposal = resourcePathRecipeProposal.addResource("ai-proposal");
-   // GET
-   curLambdaConfig = lambdaConfig[9]
-   resourcePathAiRecipeProposal.addMethod("POST",new aws_apigateway.LambdaIntegration(lambdaFn[curLambdaConfig.name]));
-  
-   
   }
 }
