@@ -14,7 +14,7 @@ export const accessOpenAI = async (ingredients:string[]):Promise<any> => {
   console.log(content)
   const chatCompletion = await openai.chat.completions.create({
     messages: [{ role: 'user', content }],
-    model: 'gpt-3.5-turbo',
+    model: process.env["OPENAI_API_MODEL"]!,
   });
 
   const chatResponse = chatCompletion.choices[0].message.content

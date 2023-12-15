@@ -24,7 +24,7 @@ export const createNodejsFunction = (
     bundling: {
       sourceMap: true,
     },
-    timeout: Duration.seconds(28),
+    timeout: Duration.seconds(180),
     memorySize: 1024,
     runtime: Runtime.NODEJS_18_X,
     role: role,

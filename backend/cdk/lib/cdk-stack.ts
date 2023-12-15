@@ -106,6 +106,7 @@ export class CdkStack extends Stack {
         name: "getRecipeProposal",
         filePath: "../apis/recipes/proposal/src/getRecipeProposal.ts",
         environment: {
+          
           ...lambdaEnvironmtntCommon,
         },
       },
@@ -113,7 +114,8 @@ export class CdkStack extends Stack {
         name: "createAiRecipeProposal",
         filePath: "../apis/recipes/proposal/ai-proposal/src/createAiRecipeProposal.ts",
         environment: {
-          OPENAI_API_KEY:"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",
+          OPENAI_API_KEY: props!.constant.apiKey,
+          OPENAI_API_MODEL:"gpt-3.5-turbo",
           ...lambdaEnvironmtntCommon,
         },
       },
