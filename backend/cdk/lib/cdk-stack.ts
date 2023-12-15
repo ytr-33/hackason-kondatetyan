@@ -106,7 +106,7 @@ export class CdkStack extends Stack {
         name: "getRecipeProposal",
         filePath: "../apis/recipes/proposal/src/getRecipeProposal.ts",
         environment: {
-          
+          RECIPE_PROPOSAL_PERCENTAGE_THRESHOLD:"20",
           ...lambdaEnvironmtntCommon,
         },
       },
