@@ -1,7 +1,5 @@
 import { RecipesModel,Recipe } from "@api-modules/dynamo-db/models/recipesModel";
 import {ApiGatewayEventPaser } from "@api-modules/api-gateway";
-import { accessOpenAI } from "../ai-proposal/src/open-ai/openAI";
-import { IngredientsModel } from "@api-modules/dynamo-db/models/ingredientsModel";
 export const handler = async (event: any) => {
   console.log(JSON.stringify(event))
 

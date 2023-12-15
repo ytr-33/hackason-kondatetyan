@@ -1,4 +1,4 @@
-import { handler } from "../src/getRecipeProposal";
+import { handler } from "../src/createRecipeProposal";
 import { APIGatewayEventMockBuilder} from "@api-modules/test-util";
 
 
