@@ -174,8 +174,9 @@ export class RecipesModel extends DynamoDbWrapper {
     recipes: Recipe[],
     percentageResults: PercentageResult[],
   ): Recipe[] {
-    const threshold = 50
+    const threshold = Number(process.env["RECIPE_PROPOSAL_PERCENTAGE_THRESHOLD"])
     // threshold以上の一致率を持つ結果のindexを取得
+    console.log(threshold)
     const matchingIndices = percentageResults
       .filter((result) => result.percentage >= threshold)
       .map((result) => result.index);
