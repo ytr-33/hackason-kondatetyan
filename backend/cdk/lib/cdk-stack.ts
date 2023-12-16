@@ -255,7 +255,7 @@ export class CdkStack extends Stack {
         aws_s3_deployment.Source.asset('../../../frontend/kondate_app/build/web'),
       ],
       destinationBucket: websiteBucket,
-      distributionPaths: ['/*'],
+      // distributionPaths: ['/*'],
     });
   }
 }
