@@ -18,6 +18,12 @@ jobs:
       with:
         node-version: '18'
 
+    - name: Copy Flutter Environment Variable
+      run: cd frontend/kondate_app && cp .env.template .env
+
+    - name: Flutter Build
+      run: cd frontend/kondate_app && flutter build web
+
     - name: Install dependencies
       run: cd backend/cdk && npm install
 
@@ -26,4 +32,4 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: 'ap-northeast-1' # AWSリージョンを指定
-      run: npx cdk deploy --all --require-approval never
+      run: cd backend/cdk && npx cdk deploy --all --require-approval never
