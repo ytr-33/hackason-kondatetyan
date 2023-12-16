@@ -23,6 +23,12 @@ jobs:
 
     - name: Install dependencies
       run: cd backend/cdk && npm install
+    
+    - name: Install node api-modules
+      run: cd backend/api-modules && npm install
+
+    - name: Install node apis
+      run: cd backend/apis && npm install    
 
     - name: Run CDK Deploy
       env:
