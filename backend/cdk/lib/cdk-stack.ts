@@ -23,25 +23,60 @@ export class CdkStack extends Stack {
     /** ----------------------------------------
      * S3バケット
      ---------------------------------------- */
+     const blockPublicAccess = new s3.BlockPublicAccess({
+      blockPublicAcls:false,
+      blockPublicPolicy:false,
+      ignorePublicAcls:false,
+      restrictPublicBuckets:false,
+     })
+
     const websiteBucket = new s3.Bucket(this, "kondatetyan-web", {
-      removalPolicy: RemovalPolicy.RETAIN
+      bucketName:"kondatetyan-web",
+      websiteIndexDocument: 'index.html',
+      publicReadAccess: false,
+      blockPublicAccess:blockPublicAccess,
+      removalPolicy: RemovalPolicy.DESTROY
     });
     
-    
-    
+    // バケットポリシーの明示的な作成
+    const websiteBucketPolicy = new aws_s3.BucketPolicy(
+      this,
+      'WebsiteBucketPolicy',
+      {
+        bucket: websiteBucket,
+      }
+    );
+
+    // バケットポリシーにアクセス制限用のステートメントを追加
+    websiteBucketPolicy.document.addStatements(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['s3:GetObject'],
+        resources: [`${websiteBucket.bucketArn}/*`],
+        principals: [new iam.ArnPrincipal("*")],
+      })
+    );
+
+
     /** ----------------------------------------
      * DynamoDBテーブル　
      ---------------------------------------- */
     const ingredientTable = new dynamodb.Table(this, 'IngredientTable', {
       partitionKey: { name: 'id', type: dynamodb.AttributeType.NUMBER },
       deletionProtection: true,
+      tableName:"IngredientTable",
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
     const recipeTable = new dynamodb.Table(this, 'RecipeTable', {
       partitionKey: { name: 'id', type: dynamodb.AttributeType.NUMBER },
       deletionProtection: true,
+      tableName:"RecipeTable",
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
+
+    
     /** ----------------------------------------
      * Lambda共通環境変数
      ---------------------------------------- */
@@ -145,14 +180,14 @@ export class CdkStack extends Stack {
       resources: [ingredientTable.tableArn, recipeTable.tableArn],
     }));
 
-    const webSiteBucketPolicyStatement = new iam.PolicyStatement({
-      actions: ['s3:GetObject','s3:CreateBucket'],
-      effect: iam.Effect.ALLOW,
-      resources: [`${websiteBucket.bucketArn}/*`],
-      principals: [new iam.AnyPrincipal()],
-    });
+    // const webSiteBucketPolicyStatement = new iam.PolicyStatement({
+    //   actions: ['s3:GetObject','s3:CreateBucket'],
+    //   effect: iam.Effect.ALLOW,
+    //   resources: [`${websiteBucket.bucketArn}/*`],
+    //   principals: [new iam.ArnPrincipal("*")],
+    // });
 
-    websiteBucket.addToResourcePolicy(webSiteBucketPolicyStatement);
+    // websiteBucket.addToResourcePolicy(webSiteBucketPolicyStatement);
 
     /** ----------------------------------------
      * 
@@ -221,6 +256,8 @@ export class CdkStack extends Stack {
       ],
       destinationBucket: websiteBucket,
       // distributionPaths: ['/*'],
+      
     });
+
   }
 }
