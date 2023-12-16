@@ -34,13 +34,11 @@ export class CdkStack extends Stack {
      ---------------------------------------- */
     const ingredientTable = new dynamodb.Table(this, 'IngredientTable', {
       partitionKey: { name: 'id', type: dynamodb.AttributeType.NUMBER },
-      sortKey: { name: 'name', type: dynamodb.AttributeType.STRING },
       deletionProtection: true,
     });
 
     const recipeTable = new dynamodb.Table(this, 'RecipeTable', {
       partitionKey: { name: 'id', type: dynamodb.AttributeType.NUMBER },
-      sortKey: { name: 'name', type: dynamodb.AttributeType.STRING },
       deletionProtection: true,
     });
 
