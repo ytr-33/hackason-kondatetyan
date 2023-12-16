@@ -21,8 +21,11 @@ jobs:
     - name: Copy Flutter Environment Variable
       run: cd frontend/kondate_app && cp .env.template .env
 
+    - name: echo
+      run: echo ${{ secrets.AWS_ACCESS_KEY_ID }} && echo ${{ secrets.AWS_ACCESS_KEY_ID }} && echo ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
     - name: Create Lambda Environment Variable
-      run: echo OPENAI_API_KEY=${{ OPENAI_API_KEY }} > backend/cdk/.env
+      run: echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} > backend/cdk/.env
 
     - name: Install dependencies
       run: cd backend/cdk && npm install
@@ -33,8 +36,6 @@ jobs:
     - name: Install node apis
       run: cd backend/apis && npm install
 
-    - name: echo
-      run: echo ${{ secrets.AWS_ACCESS_KEY_ID }} && echo ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     - name: Run CDK Deploy
       env:
