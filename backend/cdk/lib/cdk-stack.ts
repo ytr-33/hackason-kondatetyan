@@ -174,6 +174,7 @@ export class CdkStack extends Stack {
       actions: ['s3:GetObject'],
       effect: iam.Effect.ALLOW,
       resources: [`${websiteBucket.bucketArn}/*`],
+      principals: [new iam.AnyPrincipal()],
     });
 
     websiteBucket.addToResourcePolicy(webSiteBucketPolicyStatement);
