@@ -22,7 +22,7 @@ jobs:
       run: cd frontend/kondate_app && cp .env.template .env
 
     - name: Copy Flutter Environment Variable for build object
-      run: cd frontend/kondate_app && cp .env.template frontend/kondate_app/assets/.env
+      run: cd frontend/kondate_app && cp .env.template ./build/web/assets/.env
 
     # - name: echo
     #   run: echo ${{ secrets.AWS_ACCESS_KEY_ID }} && echo ${{ secrets.AWS_ACCESS_KEY_ID }} && echo ${{ secrets.AWS_SECRET_ACCESS_KEY }}
