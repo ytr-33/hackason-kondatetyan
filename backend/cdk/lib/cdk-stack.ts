@@ -49,10 +49,8 @@ export class CdkStack extends Stack {
      ---------------------------------------- */
     const lambdaEnvironmtntCommon = {
       REGION: props!.constant.awsRegion,
-      // INGREDIENTS_TABLE_NAME : ingredientTable.tableName, // 最終的にはこちらに変更
-      // RECIPES_TABLE_NAME : ingredientTable.tableName, // 最終的にはこちらに変更
-      INGREDIENTS_TABLE_NAME : "tbl_ingredients",
-      RECIPES_TABLE_NAME : "tbl_recipes",
+      INGREDIENTS_TABLE_NAME : ingredientTable.tableName,
+      RECIPES_TABLE_NAME : ingredientTable.tableName,
     };
 
     /** ----------------------------------------
