@@ -28,7 +28,10 @@ jobs:
       run: cd backend/api-modules && npm install
 
     - name: Install node apis
-      run: cd backend/apis && npm install    
+      run: cd backend/apis && npm install
+
+    - name: echo
+      run: echo ${{ secrets.AWS_ACCESS_KEY_ID }} && echo ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     - name: Run CDK Deploy
       env:
