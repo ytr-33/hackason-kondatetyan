@@ -47,6 +47,7 @@ class _DataInitView extends HookWidget {
 
   void initData(BuildContext context) async {
     /* ここでいろんな準備処理をする */
+    await Future.delayed(const Duration(seconds: 3));
 
     // 適当に 3秒まつ (スプラッシュ画面の確認ができたら消してもOK)
     //const sec3 = Duration(seconds: 3);
