@@ -21,9 +21,6 @@ jobs:
     - name: Copy Flutter Environment Variable
       run: cd frontend/kondate_app && cp .env.template .env
 
-    - name: Flutter Build
-      run: cd frontend/kondate_app && flutter build web
-
     - name: Install dependencies
       run: cd backend/cdk && npm install
 
