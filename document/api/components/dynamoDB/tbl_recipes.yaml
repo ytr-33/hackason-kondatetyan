@@ -20,7 +20,7 @@ Ingredients:
   type: object
   additionalProperties:
   example: |-
-    { 牛肉 : 1 , にんじん: 2, ジャガイモ :2 }
+    { "id": 1234 , "mount": 2}
 
 Procedure:
   description: 料理手順

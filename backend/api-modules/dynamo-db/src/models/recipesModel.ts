@@ -111,6 +111,7 @@ export class RecipesModel extends DynamoDbWrapper {
     recipes.forEach((recipe) => {
       try {
         if(recipe.ingredients){
+          console.log(recipe.ingredients)
             const ingredientsArray = JSON.parse(recipe.ingredients);
         
             if (Array.isArray(ingredientsArray)) {
@@ -131,8 +132,6 @@ export class RecipesModel extends DynamoDbWrapper {
 
     const result = this.calculateMatchPercentages(candidateIngredientIdList,proposalIdList)
     
-
-
     const proposalList = this.filterRecipesByPercentage(candidateRecipes,result)
 
     console.log(proposalList)
@@ -175,8 +174,9 @@ export class RecipesModel extends DynamoDbWrapper {
     recipes: Recipe[],
     percentageResults: PercentageResult[],
   ): Recipe[] {
-    const threshold = 50
+    const threshold = Number(process.env["RECIPE_PROPOSAL_PERCENTAGE_THRESHOLD"])
     // threshold以上の一致率を持つ結果のindexを取得
+    console.log(threshold)
     const matchingIndices = percentageResults
       .filter((result) => result.percentage >= threshold)
       .map((result) => result.index);

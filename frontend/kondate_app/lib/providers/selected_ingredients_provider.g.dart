@@ -7,12 +7,12 @@ part of 'selected_ingredients_provider.dart';
 // **************************************************************************
 
 String _$selectedIngredientsNotifierHash() =>
-    r'10e6332a93f384cefc0b6bebb65a762e5bfb5d1e';
+    r'cbf663701e06a869ef11af25105f133aa54f9e30';
 
 /// See also [SelectedIngredientsNotifier].
 @ProviderFor(SelectedIngredientsNotifier)
 final selectedIngredientsNotifierProvider = AutoDisposeNotifierProvider<
-    SelectedIngredientsNotifier, List<int>>.internal(
+    SelectedIngredientsNotifier, List<num>>.internal(
   SelectedIngredientsNotifier.new,
   name: r'selectedIngredientsNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -22,6 +22,6 @@ final selectedIngredientsNotifierProvider = AutoDisposeNotifierProvider<
   allTransitiveDependencies: null,
 );
 
-typedef _$SelectedIngredientsNotifier = AutoDisposeNotifier<List<int>>;
+typedef _$SelectedIngredientsNotifier = AutoDisposeNotifier<List<num>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

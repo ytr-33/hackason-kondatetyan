@@ -1,24 +1,22 @@
-import { RecipesModel } from "@api-modules/dynamo-db/models/recipesModel";
 import {ApiGatewayEventPaser } from "@api-modules/api-gateway";
-
-
+import { accessOpenAI } from "./open-ai/openAI";
+import { IngredientsModel } from "@api-modules/dynamo-db/models/ingredientsModel";
 export const handler = async (event: any) => {
   console.log(JSON.stringify(event))
 
   const eventParser = new ApiGatewayEventPaser(event)
 
   const proposalIdList = eventParser.getParsedBody()
-
   console.log(proposalIdList)
+ 
+  const ingredientModel = new IngredientsModel(); 
 
-  const model = new RecipesModel();
+  const ingredients = await ingredientModel.getNamesFromIds(proposalIdList)
 
-  const candidateRecipes = await model.scanAll()
+  console.log(ingredients)
 
-  console.log(candidateRecipes)
-
-  const recipeProposal =   model.createProposal(proposalIdList,candidateRecipes)
-
+  const recipeProposal =   await accessOpenAI(ingredients)
+  
   // 成功時のレスポンスを返す
   return {
     statusCode: 200,
@@ -27,6 +25,6 @@ export const handler = async (event: any) => {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "*"
   },
-    body: JSON.stringify(recipeProposal),
+    body: recipeProposal,
   };
 };
