@@ -12,7 +12,7 @@ export interface IStackConst {
 }
 
 export const stackConst: IStackConst = {
-  awsAccount: process.env["AWS_ACCOUNT"]!,
+  awsAccount: "930439815160",
   awsRegion: "ap-northeast-1",
   apigateway: {
     name: "kondatetyan-apigateway",
