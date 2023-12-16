@@ -220,7 +220,6 @@ export class CdkStack extends Stack {
             'method.response.header.Access-Control-Allow-Origin': "'*'",
           },
         }],
-        passthroughBehavior: apigateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
       });
     };
 
