@@ -252,7 +252,7 @@ export class CdkStack extends Stack {
     new s3_deployment.BucketDeployment(this, 'KondatetyanDeploy', {
       sources: [
         //Flutterアプリのビルドパッケージのパスを指定
-        aws_s3_deployment.Source.asset('../../../frontend/kondate_app/build/web'),
+        aws_s3_deployment.Source.asset('../../frontend/kondate_app/build/web'),
       ],
       destinationBucket: websiteBucket,
       // distributionPaths: ['/*'],
