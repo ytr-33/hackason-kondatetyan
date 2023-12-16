@@ -22,7 +22,7 @@ jobs:
       run: cd frontend/kondate_app && cp .env.template .env
 
     - name: Create Lambda Environment Variable
-      run: echo "OPENAI_API_KEY=${{OPENAI_API_KEY}}" > backend/cdk/.env
+      run: echo OPENAI_API_KEY=${{ OPENAI_API_KEY }} > backend/cdk/.env
 
     - name: Install dependencies
       run: cd backend/cdk && npm install
