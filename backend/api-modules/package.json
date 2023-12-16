@@ -1,0 +1,30 @@
+{
+  "name": "api-modules",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.130",
+    "@types/jest": "^29.5.10",
+    "@types/node": "^18.17.17",
+    "eslint-plugin-jest": "^27.4.0",
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
+    "redoc-cli": "^0.13.21",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@api-modules/util": "file:./util/src",
+    "@aws-sdk/client-dynamodb": "^3.462.0",
+    "@aws-sdk/lib-dynamodb": "^3.464.0",
+    "aws-lambda": "^1.0.7",
+    "openai": "^4.20.1"
+  }
+}

@@ -1,0 +1,73 @@
+get:
+  operationId: getIngredientList
+  tags:
+   - ingredients
+  summary: 食材リストを取得
+  description: |- 
+    食材リストを返却する
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../components/dynamoDB/tbl_ingredients.yaml#/Name'
+          example: 
+            - id: 1
+              name: "豚肉"
+              category: "肉"
+              unit: "g"
+            - id: 2
+              name: "牛肉"
+              category: "肉"
+              unit: "g"
+            - id: 3
+              name: "ジャガイモ"
+              category: "野菜"
+              unit: "個"
+            - id: 4
+              name: "にんじん"
+              category: "野菜"
+              unit: "本"
+            - id: 5
+              name: "牛乳"
+              category: "乳製品"
+              unit: "ml"
+                
+    default:
+       $ref: '../components/common/response.yaml#/Default'
+
+post:
+  operationId: createIngredient
+  tags:
+   - ingredients
+  summary: 食材を追加
+  description: |- 
+    食材を追加する
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              $ref: '../components/dynamoDB/tbl_ingredients.yaml#/Name'
+            category:
+              $ref: '../components/dynamoDB/tbl_ingredients.yaml#/Category'
+            Unit:
+              $ref: '../components/dynamoDB/tbl_ingredients.yaml#/Unit'
+  responses:
+    "200":
+      description: |-
+       成功<br/>
+       作成された食材IDを返す
+      content:
+        application/json:
+          schema:
+            $ref: '../components/dynamoDB/tbl_ingredients.yaml#/Id'
+    default:
+       $ref: '../components/common/response.yaml#/Default'

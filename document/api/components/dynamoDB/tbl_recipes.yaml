@@ -1,0 +1,30 @@
+Id:
+  description: 料理ID
+  type: integer
+  example: 1
+
+Name:
+  description: 料理名
+  type: string
+  example: カレー
+
+Category:
+  description: 料理カテゴリ
+  type: string
+  example: 和食
+
+Ingredients:
+  description: |-
+    必要食材<br/>
+    必要食材と個数のjsonデータ
+  type: object
+  additionalProperties:
+  example: |-
+    { "id": 1234 , "mount": 2}
+
+Procedure:
+  description: 料理手順
+  type: string
+  example: |-
+    玉ねぎ、にんじんをざく切りに...
+

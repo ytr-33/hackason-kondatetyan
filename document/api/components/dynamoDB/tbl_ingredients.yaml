@@ -1,0 +1,28 @@
+Id:
+  description: 食材ID
+  type: number
+  example: 5
+
+Name:
+  description: 食材
+  type: object
+  properties:
+    id:
+      type: integer
+    name:
+      type: string
+    category:
+      type: string
+    unit:
+      type: string
+      
+
+Category:
+  description: 食材カテゴリ
+  type: string
+  example: 野菜
+
+Unit:
+  description: 食材単位
+  type: string
+  example: 個

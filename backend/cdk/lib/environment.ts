@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv'
+dotenv.config()
+
 export interface IStackConst {
   awsAccount: string;
   awsRegion: string;
@@ -5,13 +8,15 @@ export interface IStackConst {
     name: string;
     usagePlan: string;
   };
+  apiKey:string;
 }
 
 export const stackConst: IStackConst = {
-  awsAccount: "930439815160",
+  awsAccount: process.env["AWS_ACCOUNT"]!,
   awsRegion: "ap-northeast-1",
   apigateway: {
-    name: "hands-on-apigateway",
+    name: "kondatetyan-apigateway",
     usagePlan: "sampleApiUsagePlan",
   },
+  apiKey:process.env["OPENAI_API_KEY"]!,
 };

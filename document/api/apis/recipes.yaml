@@ -1,0 +1,82 @@
+get:
+  operationId: getRecipeList
+  tags:
+   - recipes
+  summary: 料理一覧を取得
+  description: |- 
+    料理一覧を取得
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - name 
+              properties:
+                id:
+                  $ref: '../components/dynamoDB/tbl_recipes.yaml#/Id'
+                name:
+                  $ref: '../components/dynamoDB/tbl_recipes.yaml#/Name'
+                category:
+                  $ref: '../components/dynamoDB/tbl_recipes.yaml#/Category'
+                ingredients:
+                  $ref: '../components/dynamoDB/tbl_recipes.yaml#/Ingredients'
+                Procedure:
+                  $ref: '../components/dynamoDB/tbl_recipes.yaml#/Procedure'
+          example: 
+            - id: 1701794693
+              name: "カレー"
+              category: "洋食"
+              ingredients: 
+                "豚肉": 150
+                "にんじん": 3
+              Procedure: "野菜を一口大に切り..."
+            - id: 1698764400
+              name: "肉じゃが"
+              category: "和食"
+              ingredients: 
+                "牛肉": 150
+                "ジャガイモ": 3
+              Procedure: "醤油、みりん..."
+
+    default:
+       $ref: '../components/common/response.yaml#/Default'
+
+post:
+  operationId: createRecipes
+  tags:
+   - recipes
+  summary: 料理を追加
+  description: |- 
+    料理を追加する
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              $ref: '../components/dynamoDB/tbl_recipes.yaml#/Name'
+            category:
+              $ref: '../components/dynamoDB/tbl_recipes.yaml#/Category'
+            ingredients:
+              $ref: '../components/dynamoDB/tbl_recipes.yaml#/Ingredients'
+            Procedure:
+              $ref: '../components/dynamoDB/tbl_recipes.yaml#/Procedure'
+  responses:
+    "200":
+      description: |-
+       成功<br/>
+       作成された料理IDを返す
+      content:
+        application/json:
+          schema:
+            $ref: '../components/dynamoDB/tbl_recipes.yaml#/Id'
+    default:
+       $ref: '../components/common/response.yaml#/Default'
