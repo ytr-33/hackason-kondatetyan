@@ -140,29 +140,6 @@ export class CdkStack extends Stack {
         iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')
       ],
     });
-
-    // TODO:このあたりはDynamoの修正が終わり次第消す
-    lambdaDynamoRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName("AdministratorAccess")
-    );
-    lambdaDynamoRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName("AWSLambdaExecute")
-    );
-    lambdaDynamoRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName("SecretsManagerReadWrite")
-    );
-    lambdaDynamoRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess")
-    );
-    lambdaDynamoRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMFullAccess")
-    );
-    lambdaDynamoRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName(
-        "service-role/AWSLambdaVPCAccessExecutionRole"
-      )
-    );
-
     
     lambdaDynamoRole.addToPolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
@@ -210,40 +187,29 @@ export class CdkStack extends Stack {
         },
       }
      );
-    
-    const addCorsToLambdaIntegration = (lambdaFn: lambda.Function) => {
-      return new apigateway.LambdaIntegration(lambdaFn, {
-        integrationResponses: [{
-          statusCode: '200',
-          responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': "'*'",
-          },
-        }],
-      });
-    };
 
     const ingredients = api.root.addResource('ingredients')
-    ingredients.addMethod('GET', addCorsToLambdaIntegration(lambdaFn.getIngredientList))
-    ingredients.addMethod('POST', addCorsToLambdaIntegration(lambdaFn.createIngredient))
+    ingredients.addMethod('GET', new apigateway.LambdaIntegration(lambdaFn.getIngredientList))
+    ingredients.addMethod('POST', new apigateway.LambdaIntegration(lambdaFn.createIngredient))
 
     const ingredient = ingredients.addResource('{ingredient_id}')
-    ingredient.addMethod('PUT', addCorsToLambdaIntegration(lambdaFn.updateIngredient))
-    ingredient.addMethod('DELETE', addCorsToLambdaIntegration(lambdaFn.deleteIngredient))
+    ingredient.addMethod('PUT', new apigateway.LambdaIntegration(lambdaFn.updateIngredient))
+    ingredient.addMethod('DELETE', new apigateway.LambdaIntegration(lambdaFn.deleteIngredient))
 
 
     const recipes = api.root.addResource('recipes');
-    recipes.addMethod('GET', addCorsToLambdaIntegration(lambdaFn.getRecipeList));
-    recipes.addMethod('POST', addCorsToLambdaIntegration(lambdaFn.createRecipe));
+    recipes.addMethod('GET', new apigateway.LambdaIntegration(lambdaFn.getRecipeList));
+    recipes.addMethod('POST', new apigateway.LambdaIntegration(lambdaFn.createRecipe));
 
     const recipe = recipes.addResource('{recipe_id}');
-    recipe.addMethod('PUT', addCorsToLambdaIntegration(lambdaFn.updateRecipe));
-    recipe.addMethod('DELETE', addCorsToLambdaIntegration(lambdaFn.deleteRecipe));
+    recipe.addMethod('PUT', new apigateway.LambdaIntegration(lambdaFn.updateRecipe));
+    recipe.addMethod('DELETE', new apigateway.LambdaIntegration(lambdaFn.deleteRecipe));
 
     const recipeProposal = recipes.addResource('proposal');
-    recipeProposal.addMethod('POST', addCorsToLambdaIntegration(lambdaFn.createRecipeProposal));
+    recipeProposal.addMethod('POST', new apigateway.LambdaIntegration(lambdaFn.createRecipeProposal));
 
     const aiRecipeProposal = recipeProposal.addResource('ai-proposal')
-    aiRecipeProposal.addMethod('POST', addCorsToLambdaIntegration(lambdaFn.createAiRecipeProposal));
+    aiRecipeProposal.addMethod('POST', new apigateway.LambdaIntegration(lambdaFn.createAiRecipeProposal));
 
 
     /** ----------------------------------------
