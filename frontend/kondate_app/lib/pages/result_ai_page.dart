@@ -14,7 +14,10 @@ class ResultAiPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Available Recipes from AI'),
       ),
-      body: Text(answer),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Text(answer),
+      ),
     );
   }
 }

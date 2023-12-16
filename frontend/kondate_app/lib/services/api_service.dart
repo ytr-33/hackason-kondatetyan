@@ -91,7 +91,6 @@ Future<Map<num, Recipe>> getRecipeFromApi() async {
 }
 
 Future<num> postRecipeToApi(RecipeExceptId recipeExceptId) async {
-  print('ToApi1:${recipeExceptId.ingredients}}');
   var request = json.encode(recipeExceptId);
   final requestUtf = utf8.encode(request);
 
