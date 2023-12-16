@@ -1,4 +1,4 @@
-import { Stack, StackProps, aws_apigateway } from "aws-cdk-lib";
+import { RemovalPolicy, Stack, StackProps, aws_apigateway, aws_s3, aws_s3_deployment } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { IStackConst } from "./environment";
 import { LambdaConfig,createNodejsFunction } from "./utils/lambdaCreator";
@@ -6,6 +6,8 @@ import * as iam from "aws-cdk-lib/aws-iam";
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as s3_deployment from 'aws-cdk-lib/aws-s3-deployment';
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 /**
  * cdk設定用インターフェースを拡張
@@ -19,17 +21,28 @@ export class CdkStack extends Stack {
     super(scope, id, props);
 
     /** ----------------------------------------
+     * S3バケット
+     ---------------------------------------- */
+    const websiteBucket = new s3.Bucket(this, "kondatetyan-web", {
+      removalPolicy: RemovalPolicy.RETAIN
+    });
+    
+    
+    
+    /** ----------------------------------------
      * DynamoDBテーブル　
      ---------------------------------------- */
-    // const ingredientTable = new dynamodb.Table(this, 'IngredientTable', {
-    //   partitionKey: { name: 'id', type: dynamodb.AttributeType.NUMBER },
-    //   sortKey: { name: 'name', type: dynamodb.AttributeType.STRING },
-    // });
+    const ingredientTable = new dynamodb.Table(this, 'IngredientTable', {
+      partitionKey: { name: 'id', type: dynamodb.AttributeType.NUMBER },
+      sortKey: { name: 'name', type: dynamodb.AttributeType.STRING },
+      deletionProtection: true,
+    });
 
-    // const recipeTable = new dynamodb.Table(this, 'RecipeTable', {
-    //   partitionKey: { name: 'id', type: dynamodb.AttributeType.NUMBER },
-    //   sortKey: { name: 'name', type: dynamodb.AttributeType.STRING },
-    // });
+    const recipeTable = new dynamodb.Table(this, 'RecipeTable', {
+      partitionKey: { name: 'id', type: dynamodb.AttributeType.NUMBER },
+      sortKey: { name: 'name', type: dynamodb.AttributeType.STRING },
+      deletionProtection: true,
+    });
 
     /** ----------------------------------------
      * Lambda共通環境変数
@@ -153,13 +166,22 @@ export class CdkStack extends Stack {
     );
 
     
-    // lambdaDynamoRole.addToPolicy(new iam.PolicyStatement({
-    //   effect: iam.Effect.ALLOW,
-    //   actions: ['dynamodb:*'],
-    //   resources: [ingredientTable.tableArn, recipeTable.tableArn],
-    // }));
+    lambdaDynamoRole.addToPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['dynamodb:*'],
+      resources: [ingredientTable.tableArn, recipeTable.tableArn],
+    }));
+
+    const webSiteBucketPolicyStatement = new iam.PolicyStatement({
+      actions: ['s3:GetObject'],
+      effect: iam.Effect.ALLOW,
+      resources: [`${websiteBucket.bucketArn}/*`],
+    });
+
+    websiteBucket.addToResourcePolicy(webSiteBucketPolicyStatement);
 
     /** ----------------------------------------
+     * 
      * Lambda設定
      ---------------------------------------- */
     type lambdaFunctions = {
@@ -172,7 +194,7 @@ export class CdkStack extends Stack {
         curLambdaConfig,
         lambdaDynamoRole
       );
-    }
+     }
 
     /** ----------------------------------------
      * APIGateway作成
@@ -188,30 +210,55 @@ export class CdkStack extends Stack {
           metricsEnabled: true,
         },
       }
-    );
+     );
+    
+    const addCorsToLambdaIntegration = (lambdaFn: lambda.Function) => {
+      return new apigateway.LambdaIntegration(lambdaFn, {
+        integrationResponses: [{
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': "'*'",
+          },
+        }],
+        passthroughBehavior: apigateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+      });
+    };
 
     const ingredients = api.root.addResource('ingredients')
-    ingredients.addMethod('GET', new apigateway.LambdaIntegration(lambdaFn.getIngredientList))
-    ingredients.addMethod('POST', new apigateway.LambdaIntegration(lambdaFn.createIngredient))
+    ingredients.addMethod('GET', addCorsToLambdaIntegration(lambdaFn.getIngredientList))
+    ingredients.addMethod('POST', addCorsToLambdaIntegration(lambdaFn.createIngredient))
 
     const ingredient = ingredients.addResource('{ingredient_id}')
-    ingredient.addMethod('PUT', new apigateway.LambdaIntegration(lambdaFn.updateIngredient))
-    ingredient.addMethod('DELETE', new apigateway.LambdaIntegration(lambdaFn.deleteIngredient))
+    ingredient.addMethod('PUT', addCorsToLambdaIntegration(lambdaFn.updateIngredient))
+    ingredient.addMethod('DELETE', addCorsToLambdaIntegration(lambdaFn.deleteIngredient))
 
 
     const recipes = api.root.addResource('recipes');
-    recipes.addMethod('GET', new apigateway.LambdaIntegration(lambdaFn.getRecipeList));
-    recipes.addMethod('POST', new apigateway.LambdaIntegration(lambdaFn.createRecipe));
+    recipes.addMethod('GET', addCorsToLambdaIntegration(lambdaFn.getRecipeList));
+    recipes.addMethod('POST', addCorsToLambdaIntegration(lambdaFn.createRecipe));
 
     const recipe = recipes.addResource('{recipe_id}');
-    recipe.addMethod('PUT', new apigateway.LambdaIntegration(lambdaFn.updateRecipe));
-    recipe.addMethod('DELETE', new apigateway.LambdaIntegration(lambdaFn.deleteRecipe));
+    recipe.addMethod('PUT', addCorsToLambdaIntegration(lambdaFn.updateRecipe));
+    recipe.addMethod('DELETE', addCorsToLambdaIntegration(lambdaFn.deleteRecipe));
 
     const recipeProposal = recipes.addResource('proposal');
-    recipeProposal.addMethod('POST', new apigateway.LambdaIntegration(lambdaFn.createRecipeProposal));
+    recipeProposal.addMethod('POST', addCorsToLambdaIntegration(lambdaFn.createRecipeProposal));
 
     const aiRecipeProposal = recipeProposal.addResource('ai-proposal')
-    aiRecipeProposal.addMethod('POST', new apigateway.LambdaIntegration(lambdaFn.createAiRecipeProposal));
+    aiRecipeProposal.addMethod('POST', addCorsToLambdaIntegration(lambdaFn.createAiRecipeProposal));
 
+
+    /** ----------------------------------------
+     * S3デプロイ
+     ---------------------------------------- */
+
+    new s3_deployment.BucketDeployment(this, 'KondatetyanDeploy', {
+      sources: [
+        //Flutterアプリのビルドパッケージのパスを指定
+        aws_s3_deployment.Source.asset('../../../frontend/kondate_app/build/web'),
+      ],
+      destinationBucket: websiteBucket,
+      distributionPaths: ['/*'],
+    });
   }
 }
